@@ -1,7 +1,4 @@
 /*
-- postgres and mysql
-- use aws for databases
-
 input:
 -- stmt: exec / query
 -- identical: true
@@ -14,6 +11,7 @@ import (
 	"flag"
 	"log"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
