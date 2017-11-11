@@ -14,6 +14,7 @@ import (
 	"flag"
 	"log"
 
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
 	"sqltest"
@@ -44,13 +45,13 @@ func main() {
 	}
 
 	for _, arg := range args {
-		log.Printf("testing %s\n", arg)
-
 		var run sqltest.DBRunner
 		err := run.Connect(*driver, *source)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		log.Printf("testing %s\n", arg)
 		err = sqltest.RunTests(arg, &run, report{})
 		if err != nil {
 			log.Fatal(err)
