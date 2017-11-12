@@ -1,10 +1,3 @@
-/*
-input:
--- stmt: exec / query
--- identical: true
--- skip: postgres
--- only: maho
-*/
 package main
 
 import (

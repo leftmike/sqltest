@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"regexp"
 	"strings"
 )
 
@@ -21,6 +22,7 @@ type Test struct {
 	Comments   []string
 	Stmts      []string
 	IsQuery    bool
+	Properties map[string]string
 }
 
 func NewScanner(r io.Reader) *Scanner {
@@ -56,6 +58,36 @@ func (s *Scanner) err() error {
 	return nil
 }
 
+var (
+	propRegexp      = regexp.MustCompile(`^-- ([a-zA-Z]+):(.*)$`)
+	knownProperties = map[string][]string{
+		"identical": []string{"true", "false"},
+		"fail":      []string{"true", "false"},
+	}
+)
+
+func Property(line string) (key string, val string, ok bool) {
+	matches := propRegexp.FindStringSubmatch(line)
+	if matches == nil {
+		return "", "", false
+	}
+	val = strings.TrimSpace(matches[2])
+	if val == "" {
+		return "", "", false
+	}
+	return strings.ToLower(matches[1]), val, true
+}
+
+func allowedValue(val string, vals []string) bool {
+	val = strings.ToLower(val)
+	for _, s := range vals {
+		if val == s {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *Scanner) Scan() (*Test, error) {
 	var tst Test
 
@@ -72,6 +104,12 @@ func (s *Scanner) Scan() (*Test, error) {
 	for {
 		if s.notStatement() {
 			tst.Comments = append(tst.Comments, s.line)
+			if key, val, ok := Property(s.line); ok {
+				if tst.Properties == nil {
+					tst.Properties = map[string]string{}
+				}
+				tst.Properties[key] = val
+			}
 		} else {
 			break
 		}
@@ -98,6 +136,11 @@ func (s *Scanner) Scan() (*Test, error) {
 
 	if strings.ToUpper(strings.Fields(tst.Stmts[0])[0]) == "SELECT" {
 		tst.IsQuery = true
+	}
+	for key, val := range tst.Properties {
+		if vals, ok := knownProperties[key]; ok && !allowedValue(val, vals) {
+			return nil, fmt.Errorf(`"%s" is not a valid value for property "%s"`, val, key)
+		}
 	}
 
 	return &tst, nil

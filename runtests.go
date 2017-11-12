@@ -80,8 +80,14 @@ func testFile(dir, sqlname string, run Runner) (error, error) {
 		} else {
 			err = run.RunExec(tst)
 		}
-		if err != nil {
+		fail := true
+		if val, ok := tst.Properties["fail"]; !ok || strings.ToLower(val) == "false" {
+			fail = false
+		}
+		if err != nil && !fail {
 			return nil, fmt.Errorf("%s:%d: %s", tst.Filename, tst.LineNumber, err)
+		} else if err == nil && fail {
+			return nil, fmt.Errorf("%s:%d: did not fail", tst.Filename, tst.LineNumber)
 		}
 	}
 
@@ -133,7 +139,9 @@ func testQuery(tst *Test, run Runner, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	sort.Sort(resultRows(rows))
+	if val, ok := tst.Properties["identical"]; !ok || strings.ToLower(val) == "false" {
+		sort.Sort(resultRows(rows))
+	}
 
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', tabwriter.AlignRight)
 
