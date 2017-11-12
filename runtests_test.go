@@ -31,7 +31,7 @@ func (tr *testReporter) Report(test string, err error) error {
 
 func TestRunTests(t *testing.T) {
 	var tr testReporter
-	err := sqltest.RunTests("testdata/test", testRunner{}, &tr)
+	err := sqltest.RunTests("testdata/test", testRunner{}, &tr, sqltest.Dialect{"test"})
 	if err != nil {
 		t.Errorf("RunTests() failed with %s", err)
 	}

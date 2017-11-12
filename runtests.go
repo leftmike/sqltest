@@ -21,17 +21,21 @@ type Reporter interface {
 	Report(test string, err error) error
 }
 
+type Dialect struct {
+	Name string
+}
+
 // RunTests runs all of the tests in a directory: <dir>/sql/*.sql contains the tests and
 // <dir>/expected/*.out contains the expected output for each sql file. The output from each
 // sql file will get written to <dir>/output/*.out.
-func RunTests(dir string, run Runner, report Reporter) error {
+func RunTests(dir string, run Runner, report Reporter, dialect Dialect) error {
 	files, err := filepath.Glob(filepath.Join(dir, "sql", "*.sql"))
 	if err != nil {
 		return fmt.Errorf("Glob(%q) failed with %s", filepath.Join(dir, "sql", "*.sql"), err)
 	}
 
 	for _, sqlname := range files {
-		err, ret := testFile(dir, sqlname, run)
+		err, ret := testFile(dir, sqlname, run, dialect)
 		if err != nil {
 			return err
 		}
@@ -44,7 +48,7 @@ func RunTests(dir string, run Runner, report Reporter) error {
 	return nil
 }
 
-func testFile(dir, sqlname string, run Runner) (error, error) {
+func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
 	// Get filename without .sql
 	basename := filepath.Base(sqlname)
 	basename = basename[:strings.LastIndexByte(basename, '.')]
@@ -55,6 +59,7 @@ func testFile(dir, sqlname string, run Runner) (error, error) {
 	}
 	defer sqlf.Close()
 
+	var gctx TestContext
 	var out bytes.Buffer
 	scanner := NewScanner(sqlf)
 	scanner.Filename = basename + ".sql"
@@ -68,26 +73,23 @@ func testFile(dir, sqlname string, run Runner) (error, error) {
 		}
 
 		fmt.Fprintln(&out, tst.Test)
+		tctx := gctx
+		tst.Test, err = TemplateExecute(tst.Test, &tctx, &gctx, dialect)
+		if err != nil {
+			return err, nil
+		}
+
 		if tst.IsQuery {
 			err = testQuery(tst, run, &out)
 
 		} else {
 			err = run.RunExec(tst)
 		}
-		if err != nil {
+		if err != nil && !tctx.Fail {
 			return nil, fmt.Errorf("%s:%d: %s", tst.Filename, tst.LineNumber, err)
+		} else if err == nil && tctx.Fail {
+			return nil, fmt.Errorf("%s:%d: did not fail", tst.Filename, tst.LineNumber)
 		}
-		/*
-			fail := true
-			if val, ok := tst.Properties["fail"]; !ok || strings.ToLower(val) == "false" {
-				fail = false
-			}
-			if err != nil && !fail {
-				return nil, fmt.Errorf("%s:%d: %s", tst.Filename, tst.LineNumber, err)
-			} else if err == nil && fail {
-				return nil, fmt.Errorf("%s:%d: did not fail", tst.Filename, tst.LineNumber)
-			}
-		*/
 	}
 
 	outname := filepath.Join(dir, "output", basename+".out")
@@ -138,6 +140,7 @@ func testQuery(tst *Test, run Runner, out io.Writer) error {
 	if err != nil {
 		return err
 	}
+	// XXX
 	//	if val, ok := tst.Properties["identical"]; !ok || strings.ToLower(val) == "false" {
 	sort.Sort(resultRows(rows))
 	//	}

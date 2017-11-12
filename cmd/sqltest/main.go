@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -14,6 +15,18 @@ import (
 var (
 	driver = flag.String("driver", "sqlite3", "database driver to use")
 	source = flag.String("source", ":memory:", "data source to use")
+
+	dialects = map[string]sqltest.Dialect{
+		"sqlite3": sqltest.Dialect{
+			Name: "sqlite3",
+		},
+		"postgres": sqltest.Dialect{
+			Name: "postgres",
+		},
+		"mysql": sqltest.Dialect{
+			Name: "mysql",
+		},
+	}
 )
 
 type report struct{}
@@ -35,6 +48,11 @@ func main() {
 		args = []string{"testdata"}
 	}
 
+	dialect, ok := dialects[*driver]
+	if !ok {
+		log.Fatal(fmt.Errorf("missing dialect for driver %s", *driver))
+	}
+
 	for _, arg := range args {
 		var run sqltest.DBRunner
 		err := run.Connect(*driver, *source)
@@ -43,7 +61,7 @@ func main() {
 		}
 
 		log.Printf("testing %s\n", arg)
-		err = sqltest.RunTests(arg, &run, report{})
+		err = sqltest.RunTests(arg, &run, report{}, dialect)
 		if err != nil {
 			log.Fatal(err)
 		}
