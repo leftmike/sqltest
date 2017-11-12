@@ -2,7 +2,6 @@ package sqltest
 
 import (
 	"database/sql"
-	"strings"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -12,12 +11,12 @@ type DBRunner struct {
 }
 
 func (run *DBRunner) RunExec(tst *Test) error {
-	_, err := run.db.Exec(strings.Join(tst.Stmts, " "))
+	_, err := run.db.Exec(tst.Test)
 	return err
 }
 
 func (run *DBRunner) RunQuery(tst *Test) ([]string, [][]string, error) {
-	rows, err := run.db.Query(strings.Join(tst.Stmts, " "))
+	rows, err := run.db.Query(tst.Test)
 	if err != nil {
 		return nil, nil, err
 	}

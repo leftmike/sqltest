@@ -67,28 +67,27 @@ func testFile(dir, sqlname string, run Runner) (error, error) {
 			break
 		}
 
-		for _, l := range tst.Comments {
-			fmt.Fprintln(&out, l)
-		}
-		for _, l := range tst.Stmts {
-			fmt.Fprintln(&out, l)
-		}
-
+		fmt.Fprintln(&out, tst.Test)
 		if tst.IsQuery {
 			err = testQuery(tst, run, &out)
 
 		} else {
 			err = run.RunExec(tst)
 		}
-		fail := true
-		if val, ok := tst.Properties["fail"]; !ok || strings.ToLower(val) == "false" {
-			fail = false
-		}
-		if err != nil && !fail {
+		if err != nil {
 			return nil, fmt.Errorf("%s:%d: %s", tst.Filename, tst.LineNumber, err)
-		} else if err == nil && fail {
-			return nil, fmt.Errorf("%s:%d: did not fail", tst.Filename, tst.LineNumber)
 		}
+		/*
+			fail := true
+			if val, ok := tst.Properties["fail"]; !ok || strings.ToLower(val) == "false" {
+				fail = false
+			}
+			if err != nil && !fail {
+				return nil, fmt.Errorf("%s:%d: %s", tst.Filename, tst.LineNumber, err)
+			} else if err == nil && fail {
+				return nil, fmt.Errorf("%s:%d: did not fail", tst.Filename, tst.LineNumber)
+			}
+		*/
 	}
 
 	outname := filepath.Join(dir, "output", basename+".out")
@@ -139,9 +138,9 @@ func testQuery(tst *Test, run Runner, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	if val, ok := tst.Properties["identical"]; !ok || strings.ToLower(val) == "false" {
-		sort.Sort(resultRows(rows))
-	}
+	//	if val, ok := tst.Properties["identical"]; !ok || strings.ToLower(val) == "false" {
+	sort.Sort(resultRows(rows))
+	//	}
 
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', tabwriter.AlignRight)
 

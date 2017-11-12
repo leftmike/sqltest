@@ -19,10 +19,8 @@ type Scanner struct {
 type Test struct {
 	Filename   string
 	LineNumber int
-	Comments   []string
-	Stmts      []string
-	IsQuery    bool
-	Properties map[string]string
+	Test       string
+	IsQuery    bool // XXX
 }
 
 func NewScanner(r io.Reader) *Scanner {
@@ -42,11 +40,6 @@ func (s *Scanner) scanLine() bool {
 	return true
 }
 
-func (s *Scanner) notStatement() bool {
-	return strings.TrimSpace(s.line) == "" ||
-		(len(s.line) >= 2 && s.line[0] == '-' && s.line[1] == '-')
-}
-
 func (s *Scanner) err() error {
 	err := s.scanner.Err()
 	if err != nil {
@@ -58,35 +51,7 @@ func (s *Scanner) err() error {
 	return nil
 }
 
-var (
-	propRegexp      = regexp.MustCompile(`^-- ([a-zA-Z]+):(.*)$`)
-	knownProperties = map[string][]string{
-		"identical": []string{"true", "false"},
-		"fail":      []string{"true", "false"},
-	}
-)
-
-func Property(line string) (key string, val string, ok bool) {
-	matches := propRegexp.FindStringSubmatch(line)
-	if matches == nil {
-		return "", "", false
-	}
-	val = strings.TrimSpace(matches[2])
-	if val == "" {
-		return "", "", false
-	}
-	return strings.ToLower(matches[1]), val, true
-}
-
-func allowedValue(val string, vals []string) bool {
-	val = strings.ToLower(val)
-	for _, s := range vals {
-		if val == s {
-			return true
-		}
-	}
-	return false
-}
+var stmtRegexp = regexp.MustCompile(`(?m)^[a-zA-Z]+`)
 
 func (s *Scanner) Scan() (*Test, error) {
 	var tst Test
@@ -99,18 +64,10 @@ func (s *Scanner) Scan() (*Test, error) {
 		return nil, s.err()
 	}
 
-	// Gather comments (lines starting with --)  and blank lines into s.Comments
+	// Skip blank lines.
 
 	for {
-		if s.notStatement() {
-			tst.Comments = append(tst.Comments, s.line)
-			if key, val, ok := Property(s.line); ok {
-				if tst.Properties == nil {
-					tst.Properties = map[string]string{}
-				}
-				tst.Properties[key] = val
-			}
-		} else {
+		if strings.TrimSpace(s.line) != "" {
 			break
 		}
 		if !s.scanLine() {
@@ -118,29 +75,28 @@ func (s *Scanner) Scan() (*Test, error) {
 		}
 	}
 
-	// Gather everything which is not a comment (line starting with --) or a blank line into
-	// s.Stmts.
+	// Gather everything until the next blank line into tst.Test
 
 	tst.Filename = s.Filename
 	tst.LineNumber = s.lineNumber
 
 	for {
-		if s.notStatement() {
+		if strings.TrimSpace(s.line) == "" {
 			break
 		}
-		tst.Stmts = append(tst.Stmts, s.line)
+		if tst.Test == "" {
+			tst.Test = s.line
+		} else {
+			tst.Test += "\n" + s.line
+		}
 		if !s.scanLine() {
 			break
 		}
 	}
 
-	if strings.ToUpper(strings.Fields(tst.Stmts[0])[0]) == "SELECT" {
+	stmt := stmtRegexp.FindString(tst.Test)
+	if strings.ToUpper(stmt) == "SELECT" {
 		tst.IsQuery = true
-	}
-	for key, val := range tst.Properties {
-		if vals, ok := knownProperties[key]; ok && !allowedValue(val, vals) {
-			return nil, fmt.Errorf(`"%s" is not a valid value for property "%s"`, val, key)
-		}
 	}
 
 	return &tst, nil
