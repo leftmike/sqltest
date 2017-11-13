@@ -6,8 +6,9 @@ import (
 )
 
 type TestContext struct {
-	Fail      bool
 	Statement string
+	Fail      bool
+	NoSort    bool
 }
 
 type templateContext struct {
@@ -31,9 +32,15 @@ func statementFunc(ctx *TestContext, stmt string) string {
 	return ""
 }
 
+func sortFunc(ctx *TestContext, sort bool) string {
+	ctx.NoSort = !sort
+	return ""
+}
+
 var templateFuncs = template.FuncMap{
 	"Fail":      failFunc,
 	"Statement": statementFunc,
+	"Sort":      sortFunc,
 }
 
 func TemplateExecute(tmpl string, tctx, gctx *TestContext, dialect Dialect) (string, error) {

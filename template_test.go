@@ -46,6 +46,11 @@ func TestTemplateExecute(t *testing.T) {
 			result: "",
 			tctx:   sqltest.TestContext{Fail: true},
 		},
+		{
+			tmpl:   "{{Sort $.Test false}}",
+			result: "",
+			tctx:   sqltest.TestContext{NoSort: true},
+		},
 	}
 
 	for _, c := range cases {

@@ -49,7 +49,7 @@ SELECT * FROM tbl;
 				LineNumber: 1,
 				Test: `-- a comment
 SELECT * FROM tbl;`,
-				IsQuery: true,
+				Statement: "SELECT",
 			},
 		},
 	},
@@ -75,7 +75,7 @@ WHERE c2 = 2
 SELECT * FROM tbl
 WHERE x = 12
 ORDER BY y`,
-				IsQuery: true,
+				Statement: "SELECT",
 			},
 			{
 				Filename:   "cases[1]",
@@ -84,14 +84,14 @@ ORDER BY y`,
 INSERT INTO tbl VALUES
 	(1, 2, 3),
 	(4, 5, 6)`,
-				IsQuery: false,
+				Statement: "INSERT",
 			},
 			{
 				Filename:   "cases[1]",
 				LineNumber: 11,
 				Test: `DELETE FROM tbl
 WHERE c2 = 2`,
-				IsQuery: false,
+				Statement: "DELETE",
 			},
 		},
 	},

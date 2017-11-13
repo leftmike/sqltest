@@ -20,7 +20,7 @@ type Test struct {
 	Filename   string
 	LineNumber int
 	Test       string
-	IsQuery    bool // XXX
+	Statement  string
 }
 
 func NewScanner(r io.Reader) *Scanner {
@@ -94,10 +94,7 @@ func (s *Scanner) Scan() (*Test, error) {
 		}
 	}
 
-	stmt := stmtRegexp.FindString(tst.Test)
-	if strings.ToUpper(stmt) == "SELECT" {
-		tst.IsQuery = true
-	}
+	tst.Statement = stmtRegexp.FindString(tst.Test)
 
 	return &tst, nil
 }

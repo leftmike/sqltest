@@ -79,9 +79,8 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
 			return err, nil
 		}
 
-		if tst.IsQuery {
-			err = testQuery(tst, run, &out)
-
+		if strings.ToUpper(tst.Statement) == "SELECT" {
+			err = testQuery(tst, run, &out, &tctx)
 		} else {
 			err = run.RunExec(tst)
 		}
@@ -135,15 +134,14 @@ func (rr resultRows) Less(i, j int) bool {
 	return false
 }
 
-func testQuery(tst *Test, run Runner, out io.Writer) error {
+func testQuery(tst *Test, run Runner, out io.Writer, tctx *TestContext) error {
 	cols, rows, err := run.RunQuery(tst)
 	if err != nil {
 		return err
 	}
-	// XXX
-	//	if val, ok := tst.Properties["identical"]; !ok || strings.ToLower(val) == "false" {
-	sort.Sort(resultRows(rows))
-	//	}
+	if !tctx.NoSort {
+		sort.Sort(resultRows(rows))
+	}
 
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', tabwriter.AlignRight)
 
