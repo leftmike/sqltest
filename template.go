@@ -18,6 +18,10 @@ type templateContext struct {
 	dialect Dialect
 }
 
+func (tctx templateContext) ColumnType(typ string, arg ...int) string {
+	return tctx.dialect.ColumnType(typ, arg)
+}
+
 func failFunc(ctx *TestContext, fail ...bool) string {
 	if len(fail) > 0 {
 		ctx.Fail = fail[0]
@@ -47,7 +51,8 @@ func TemplateExecute(tmpl string, tctx, gctx *TestContext, dialect Dialect) (str
 	t := template.New("sqltest").Funcs(templateFuncs)
 	t, err := t.Parse(tmpl)
 
-	tmplCtx := templateContext{Test: tctx, Global: gctx, Dialect: dialect.Name, dialect: dialect}
+	tmplCtx := templateContext{Test: tctx, Global: gctx, Dialect: dialect.DriverName(),
+		dialect: dialect}
 	var test bytes.Buffer
 	err = t.Execute(&test, &tmplCtx)
 	if err != nil {

@@ -21,8 +21,9 @@ type Reporter interface {
 	Report(test string, err error) error
 }
 
-type Dialect struct {
-	Name string
+type Dialect interface {
+	DriverName() string
+	ColumnType(typ string, arg []int) string
 }
 
 // RunTests runs all of the tests in a directory: <dir>/sql/*.sql contains the tests and

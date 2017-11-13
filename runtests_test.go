@@ -1,6 +1,7 @@
 package sqltest_test
 
 import (
+	"fmt"
 	"testing"
 
 	"sqltest"
@@ -29,9 +30,22 @@ func (tr *testReporter) Report(test string, err error) error {
 	return nil
 }
 
+type testDialect struct{}
+
+func (_ testDialect) DriverName() string {
+	return "test"
+}
+
+func (_ testDialect) ColumnType(typ string, arg []int) string {
+	if len(arg) > 0 {
+		return fmt.Sprintf("%s(%d)", typ, arg[0])
+	}
+	return typ
+}
+
 func TestRunTests(t *testing.T) {
 	var tr testReporter
-	err := sqltest.RunTests("testdata/test", testRunner{}, &tr, sqltest.Dialect{"test"})
+	err := sqltest.RunTests("testdata/test", testRunner{}, &tr, testDialect{})
 	if err != nil {
 		t.Errorf("RunTests() failed with %s", err)
 	}

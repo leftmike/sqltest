@@ -1,11 +1,25 @@
 package sqltest_test
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
 	"sqltest"
 )
+
+type templateDialect struct{}
+
+func (_ templateDialect) DriverName() string {
+	return "template"
+}
+
+func (_ templateDialect) ColumnType(typ string, arg []int) string {
+	if len(arg) > 0 {
+		return fmt.Sprintf("%s(%d)", typ, arg[0])
+	}
+	return typ
+}
 
 func TestTemplateExecute(t *testing.T) {
 	cases := []struct {
@@ -19,7 +33,7 @@ func TestTemplateExecute(t *testing.T) {
 		},
 		{
 			tmpl:   "{{$.Dialect}}",
-			result: "test",
+			result: "template",
 		},
 		{
 			tmpl:   "{{Fail $.Test true}}",
@@ -37,7 +51,7 @@ func TestTemplateExecute(t *testing.T) {
 			tctx:   sqltest.TestContext{Statement: "SELECT"},
 		},
 		{
-			tmpl:   `{{eq $.Dialect "test" | Fail $.Test}}`,
+			tmpl:   `{{eq $.Dialect "template" | Fail $.Test}}`,
 			result: "",
 			tctx:   sqltest.TestContext{Fail: true},
 		},
@@ -47,15 +61,23 @@ func TestTemplateExecute(t *testing.T) {
 			tctx:   sqltest.TestContext{Fail: true},
 		},
 		{
-			tmpl:   "{{Sort $.Test false}}",
+			tmpl:   "{{Sort .Test false}}",
 			result: "",
 			tctx:   sqltest.TestContext{NoSort: true},
+		},
+		{
+			tmpl:   `{{$.ColumnType "BINARY"}}`,
+			result: "BINARY",
+		},
+		{
+			tmpl:   `{{$.ColumnType "VARBINARY" 12}}`,
+			result: "VARBINARY(12)",
 		},
 	}
 
 	for _, c := range cases {
 		var tctx, gctx sqltest.TestContext
-		r, err := sqltest.TemplateExecute(c.tmpl, &tctx, &gctx, sqltest.Dialect{"test"})
+		r, err := sqltest.TemplateExecute(c.tmpl, &tctx, &gctx, templateDialect{})
 		if c.fail {
 			if err == nil {
 				t.Errorf("TemplateExecute(%q) did not fail", c.tmpl)

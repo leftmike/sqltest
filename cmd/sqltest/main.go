@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -12,20 +13,60 @@ import (
 	"sqltest"
 )
 
+type sqlite3Dialect struct{}
+
+func (_ sqlite3Dialect) DriverName() string {
+	return "sqlite3"
+}
+
+func (_ sqlite3Dialect) ColumnType(typ string, arg []int) string {
+	if len(arg) > 0 {
+		return fmt.Sprintf("%s(%d)", typ, arg[0])
+	}
+	return typ
+}
+
+type postgresDialect struct{}
+
+func (_ postgresDialect) DriverName() string {
+	return "postgres"
+}
+
+func (_ postgresDialect) ColumnType(typ string, arg []int) string {
+	typ = strings.ToUpper(typ)
+	if typ == "BINARY" || typ == "VARBINARY" || typ == "BLOB" {
+		return "BYTEA"
+	}
+	if typ == "TEXT" {
+		return "TEXT"
+	}
+	if len(arg) > 0 {
+		return fmt.Sprintf("%s(%d)", typ, arg[0])
+	}
+	return typ
+}
+
+type mysqlDialect struct{}
+
+func (_ mysqlDialect) DriverName() string {
+	return "mysql"
+}
+
+func (_ mysqlDialect) ColumnType(typ string, arg []int) string {
+	if len(arg) > 0 {
+		return fmt.Sprintf("%s(%d)", typ, arg[0])
+	}
+	return typ
+}
+
 var (
 	driver = flag.String("driver", "sqlite3", "database driver to use")
 	source = flag.String("source", ":memory:", "data source to use")
 
 	dialects = map[string]sqltest.Dialect{
-		"sqlite3": sqltest.Dialect{
-			Name: "sqlite3",
-		},
-		"postgres": sqltest.Dialect{
-			Name: "postgres",
-		},
-		"mysql": sqltest.Dialect{
-			Name: "mysql",
-		},
+		"sqlite3":  sqlite3Dialect{},
+		"postgres": postgresDialect{},
+		"mysql":    mysqlDialect{},
 	}
 )
 
