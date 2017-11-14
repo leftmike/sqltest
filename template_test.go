@@ -1,24 +1,18 @@
 package sqltest_test
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 
 	"sqltest"
 )
 
-type templateDialect struct{}
+type templateDialect struct {
+	sqltest.DefaultDialect
+}
 
 func (_ templateDialect) DriverName() string {
 	return "template"
-}
-
-func (_ templateDialect) ColumnType(typ string, arg []int) string {
-	if len(arg) > 0 {
-		return fmt.Sprintf("%s(%d)", typ, arg[0])
-	}
-	return typ
 }
 
 func TestTemplateExecute(t *testing.T) {
@@ -32,31 +26,31 @@ func TestTemplateExecute(t *testing.T) {
 			result: "nothing changed",
 		},
 		{
-			tmpl:   "{{$.Dialect}}",
+			tmpl:   "{{Dialect}}",
 			result: "template",
 		},
 		{
-			tmpl:   "{{Fail $.Test true}}",
+			tmpl:   "{{Fail .Test true}}",
 			result: "",
 			tctx:   sqltest.TestContext{Fail: true},
 		},
 		{
-			tmpl:   "{{Fail $.Global true}}",
+			tmpl:   "{{Fail .Global true}}",
 			result: "",
 			gctx:   sqltest.TestContext{Fail: true},
 		},
 		{
-			tmpl:   `{{$.Test.Statement}}{{Statement $.Test "SELECT"}}{{$.Test.Statement}}`,
+			tmpl:   `{{.Test.Statement}}{{Statement .Test "SELECT"}}{{.Test.Statement}}`,
 			result: "SELECT",
 			tctx:   sqltest.TestContext{Statement: "SELECT"},
 		},
 		{
-			tmpl:   `{{eq $.Dialect "template" | Fail $.Test}}`,
+			tmpl:   `{{eq Dialect "template" | Fail .Test}}`,
 			result: "",
 			tctx:   sqltest.TestContext{Fail: true},
 		},
 		{
-			tmpl:   "{{Fail $.Test}}",
+			tmpl:   "{{Fail .Test}}",
 			result: "",
 			tctx:   sqltest.TestContext{Fail: true},
 		},
@@ -66,18 +60,18 @@ func TestTemplateExecute(t *testing.T) {
 			tctx:   sqltest.TestContext{NoSort: true},
 		},
 		{
-			tmpl:   `{{$.ColumnType "BINARY"}}`,
+			tmpl:   "{{BINARY}}",
 			result: "BINARY",
 		},
 		{
-			tmpl:   `{{$.ColumnType "VARBINARY" 12}}`,
+			tmpl:   "{{VARBINARY 12}}",
 			result: "VARBINARY(12)",
 		},
 	}
 
 	for _, c := range cases {
-		var tctx, gctx sqltest.TestContext
-		r, err := sqltest.TemplateExecute(c.tmpl, &tctx, &gctx, templateDialect{})
+		tmplCtx := sqltest.NewTemplateContext(templateDialect{})
+		r, tctx, err := tmplCtx.Execute(c.tmpl)
 		if c.fail {
 			if err == nil {
 				t.Errorf("TemplateExecute(%q) did not fail", c.tmpl)
@@ -92,8 +86,9 @@ func TestTemplateExecute(t *testing.T) {
 				if !reflect.DeepEqual(tctx, c.tctx) {
 					t.Errorf("TemplateExecute(%q): tctx got %v want %v", c.tmpl, tctx, c.tctx)
 				}
-				if !reflect.DeepEqual(gctx, c.gctx) {
-					t.Errorf("TemplateExecute(%q): gctx got %v want %v", c.tmpl, gctx, c.gctx)
+				if !reflect.DeepEqual(tmplCtx.Global, c.gctx) {
+					t.Errorf("TemplateExecute(%q): gctx got %v want %v", c.tmpl, tmplCtx.Global,
+						c.gctx)
 				}
 			}
 		}

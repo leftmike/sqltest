@@ -1,7 +1,6 @@
 package sqltest_test
 
 import (
-	"fmt"
 	"testing"
 
 	"sqltest"
@@ -30,17 +29,12 @@ func (tr *testReporter) Report(test string, err error) error {
 	return nil
 }
 
-type testDialect struct{}
+type testDialect struct {
+	sqltest.DefaultDialect
+}
 
 func (_ testDialect) DriverName() string {
 	return "test"
-}
-
-func (_ testDialect) ColumnType(typ string, arg []int) string {
-	if len(arg) > 0 {
-		return fmt.Sprintf("%s(%d)", typ, arg[0])
-	}
-	return typ
 }
 
 func TestRunTests(t *testing.T) {

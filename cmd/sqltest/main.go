@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -13,17 +12,12 @@ import (
 	"sqltest"
 )
 
-type sqlite3Dialect struct{}
+type sqlite3Dialect struct {
+	sqltest.DefaultDialect
+}
 
 func (_ sqlite3Dialect) DriverName() string {
 	return "sqlite3"
-}
-
-func (_ sqlite3Dialect) ColumnType(typ string, arg []int) string {
-	if len(arg) > 0 {
-		return fmt.Sprintf("%s(%d)", typ, arg[0])
-	}
-	return typ
 }
 
 type postgresDialect struct{}
@@ -32,31 +26,29 @@ func (_ postgresDialect) DriverName() string {
 	return "postgres"
 }
 
-func (_ postgresDialect) ColumnType(typ string, arg []int) string {
-	typ = strings.ToUpper(typ)
+func (_ postgresDialect) ColumnType(typ string) string {
+	if typ == "BINARY" || typ == "VARBINARY" || typ == "BLOB" {
+		return "BYTEA"
+	}
+	return typ
+}
+
+func (_ postgresDialect) ColumnTypeArg(typ string, arg int) string {
 	if typ == "BINARY" || typ == "VARBINARY" || typ == "BLOB" {
 		return "BYTEA"
 	}
 	if typ == "TEXT" {
 		return "TEXT"
 	}
-	if len(arg) > 0 {
-		return fmt.Sprintf("%s(%d)", typ, arg[0])
-	}
-	return typ
+	return fmt.Sprintf("%s(%d)", typ, arg)
 }
 
-type mysqlDialect struct{}
+type mysqlDialect struct {
+	sqltest.DefaultDialect
+}
 
 func (_ mysqlDialect) DriverName() string {
 	return "mysql"
-}
-
-func (_ mysqlDialect) ColumnType(typ string, arg []int) string {
-	if len(arg) > 0 {
-		return fmt.Sprintf("%s(%d)", typ, arg[0])
-	}
-	return typ
 }
 
 var (

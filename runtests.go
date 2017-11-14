@@ -23,7 +23,18 @@ type Reporter interface {
 
 type Dialect interface {
 	DriverName() string
-	ColumnType(typ string, arg []int) string
+	ColumnType(typ string) string
+	ColumnTypeArg(typ string, arg int) string
+}
+
+type DefaultDialect struct{}
+
+func (_ DefaultDialect) ColumnType(typ string) string {
+	return typ
+}
+
+func (_ DefaultDialect) ColumnTypeArg(typ string, arg int) string {
+	return fmt.Sprintf("%s(%d)", typ, arg)
 }
 
 // RunTests runs all of the tests in a directory: <dir>/sql/*.sql contains the tests and
@@ -60,7 +71,7 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
 	}
 	defer sqlf.Close()
 
-	var gctx TestContext
+	tmplCtx := NewTemplateContext(dialect)
 	var out bytes.Buffer
 	scanner := NewScanner(sqlf)
 	scanner.Filename = basename + ".sql"
@@ -74,8 +85,8 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
 		}
 
 		fmt.Fprintln(&out, tst.Test)
-		tctx := gctx
-		tst.Test, err = TemplateExecute(tst.Test, &tctx, &gctx, dialect)
+		var tctx TestContext
+		tst.Test, tctx, err = tmplCtx.Execute(tst.Test)
 		if err != nil {
 			return err, nil
 		}

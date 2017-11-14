@@ -5,21 +5,15 @@ import (
 	"text/template"
 )
 
+type TemplateContext struct {
+	Global TestContext
+	funcs  template.FuncMap
+}
+
 type TestContext struct {
 	Statement string
 	Fail      bool
 	NoSort    bool
-}
-
-type templateContext struct {
-	Test    *TestContext
-	Global  *TestContext
-	Dialect string
-	dialect Dialect
-}
-
-func (tctx templateContext) ColumnType(typ string, arg ...int) string {
-	return tctx.dialect.ColumnType(typ, arg)
 }
 
 func failFunc(ctx *TestContext, fail ...bool) string {
@@ -41,22 +35,58 @@ func sortFunc(ctx *TestContext, sort bool) string {
 	return ""
 }
 
-var templateFuncs = template.FuncMap{
-	"Fail":      failFunc,
-	"Statement": statementFunc,
-	"Sort":      sortFunc,
+func NewTemplateContext(dialect Dialect) *TemplateContext {
+	return &TemplateContext{
+		funcs: template.FuncMap{
+			"Fail":      failFunc,
+			"Statement": statementFunc,
+			"Sort":      sortFunc,
+			"Dialect": func() string {
+				return dialect.DriverName()
+			},
+			"BINARY": func(arg ...int) string {
+				if len(arg) == 0 {
+					return dialect.ColumnType("BINARY")
+				}
+				return dialect.ColumnTypeArg("BINARY", arg[0])
+			},
+			"VARBINARY": func(arg ...int) string {
+				if len(arg) == 0 {
+					return dialect.ColumnType("VARBINARY")
+				}
+				return dialect.ColumnTypeArg("VARBINARY", arg[0])
+			},
+			"BLOB": func(arg ...int) string {
+				if len(arg) == 0 {
+					return dialect.ColumnType("BLOB")
+				}
+				return dialect.ColumnTypeArg("BLOB", arg[0])
+			},
+			"TEXT": func(arg ...int) string {
+				if len(arg) == 0 {
+					return dialect.ColumnType("TEXT")
+				}
+				return dialect.ColumnTypeArg("TEXT", arg[0])
+			},
+		},
+	}
 }
 
-func TemplateExecute(tmpl string, tctx, gctx *TestContext, dialect Dialect) (string, error) {
-	t := template.New("sqltest").Funcs(templateFuncs)
+func (tmplCtx *TemplateContext) Execute(tmpl string) (string, TestContext, error) {
+	t := template.New("sqltest").Funcs(tmplCtx.funcs)
 	t, err := t.Parse(tmpl)
 
-	tmplCtx := templateContext{Test: tctx, Global: gctx, Dialect: dialect.DriverName(),
-		dialect: dialect}
-	var test bytes.Buffer
-	err = t.Execute(&test, &tmplCtx)
-	if err != nil {
-		return tmpl, err
+	tctx := tmplCtx.Global
+	tmplData := struct {
+		Test, Global *TestContext
+	}{
+		Test:   &tctx,
+		Global: &tmplCtx.Global,
 	}
-	return test.String(), nil
+	var test bytes.Buffer
+	err = t.Execute(&test, &tmplData)
+	if err != nil {
+		return tmpl, TestContext{}, err
+	}
+	return test.String(), tctx, nil
 }
