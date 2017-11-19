@@ -7,6 +7,7 @@ import (
 
 type TemplateContext struct {
 	Global TestContext
+	Skip   bool
 	funcs  template.FuncMap
 }
 
@@ -36,7 +37,7 @@ func sortFunc(ctx *TestContext, sort bool) string {
 }
 
 func NewTemplateContext(dialect Dialect) *TemplateContext {
-	return &TemplateContext{
+	tmplCtx := &TemplateContext{
 		funcs: template.FuncMap{
 			"Fail":      failFunc,
 			"Statement": statementFunc,
@@ -70,6 +71,12 @@ func NewTemplateContext(dialect Dialect) *TemplateContext {
 			},
 		},
 	}
+
+	tmplCtx.funcs["Skip"] = func() string {
+		tmplCtx.Skip = true
+		return ""
+	}
+	return tmplCtx
 }
 
 func (tmplCtx *TemplateContext) Execute(tmpl string) (string, TestContext, error) {

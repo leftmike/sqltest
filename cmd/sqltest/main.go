@@ -67,6 +67,8 @@ type report struct{}
 func (r report) Report(test string, err error) error {
 	if err == nil {
 		log.Printf("%s: passed\n", test)
+	} else if err == sqltest.Skipped {
+		log.Printf("%s: skipped\n", test)
 	} else {
 		log.Printf("%s: failed: %s\n", test, err)
 	}

@@ -28,7 +28,7 @@ CREATE TABLE tbl5 (c1 char, c2 char(200), c3 varchar(5), c4 text, c5 {{TEXT 123}
 
 DROP TABLE IF EXISTS tbl6;
 
-{{eq Dialect "sqlite3" | not | Fail .Test}}
+-- {{eq Dialect "sqlite3" | not | Fail .Test}}
 CREATE TABLE tbl6 (c1 badtype);
 
 DROP TABLE IF EXISTS tbl7;
@@ -38,3 +38,13 @@ CREATE TABLE tbl7 (c1 {{BINARY}}, c2 {{VARBINARY 10}}, c3 {{BLOB}});
 DROP TABLE IF EXISTS tbl8;
 
 CREATE TABLE tbl8 (c1 {{BINARY 123}}, c2 {{BLOB 456}});
+
+DROP TABLE IF EXISTS tbl9;
+
+CREATE TABLE tbl9 (c1 char(64) not null, c2 varchar(64) not null, c3 bool not null,
+    c4 int not null)
+
+DROP TABLE IF EXISTS tbl10;
+
+CREATE TABLE tbl10 (c1 char(64) default 'abc', c2 varchar(64) default 'def', c3 bool default true,
+    c4 int default 123)

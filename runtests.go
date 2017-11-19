@@ -12,6 +12,8 @@ import (
 	"text/tabwriter"
 )
 
+var Skipped = fmt.Errorf("skipped")
+
 type Runner interface {
 	RunExec(tst *Test) error
 	RunQuery(tst *Test) ([]string, [][]string, error)
@@ -89,6 +91,9 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
 		tst.Test, tctx, err = tmplCtx.Execute(tst.Test)
 		if err != nil {
 			return err, nil
+		}
+		if tmplCtx.Skip {
+			return nil, Skipped
 		}
 
 		if strings.ToUpper(tst.Statement) == "SELECT" {
