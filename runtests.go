@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/andreyvit/diff"
 )
 
 var Skipped = fmt.Errorf("skipped")
@@ -121,8 +123,11 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
 		return nil, fmt.Errorf("no expected output for %s", sqlname)
 	}
 
-	if string(exp) != out.String() {
-		return nil, fmt.Errorf("%s and %s are different\n", outname, expname)
+	expString := string(exp)
+	outString := out.String()
+	if expString != outString {
+		return nil, fmt.Errorf("%s and %s are different\n%v", outname, expname,
+			diff.LineDiff(expString, outString))
 	}
 
 	return nil, nil

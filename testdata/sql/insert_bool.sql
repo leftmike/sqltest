@@ -23,3 +23,85 @@ CREATE TABLE tbl2 (c1 bool default true, c2 int default 123);
 INSERT INTO tbl2 (c2) VALUES (456);
 
 SELECT * FROM tbl2;
+
+DROP TABLE IF EXISTS tbl3;
+
+CREATE TABLE tbl3 (c1 bool);
+
+INSERT INTO tbl3 VALUES
+    (TRUE),
+    (true),
+    ('t'),
+    ('true'),
+    ('y'),
+    ('yes'),
+    ('on'),
+    ('1'),
+    (FALSE),
+    (false),
+    ('f'),
+    ('false'),
+    ('n'),
+    ('no'),
+    ('off'),
+    ('0');
+
+SELECT * from tbl3;
+
+DROP TABLE IF EXISTS tbl4;
+
+CREATE TABLE tbl4 (c1 bool);
+
+INSERT INTO tbl4 VALUES
+    (true AND true),
+    (true AND false),
+    (false AND true),
+    (false AND false),
+    (true OR true),
+    (true OR false),
+    (false OR true),
+    (false OR false),
+    (NOT true),
+    (NOT false),
+    (NOT true AND true),
+    (NOT true AND false),
+    (NOT false AND true),
+    (NOT false AND false),
+    (true AND NOT true),
+    (true AND NOT false),
+    (false AND NOT true),
+    (false AND NOT false),
+    (1 = 2),
+    (1 = 1),
+    (2 = 1),
+    (123 >= 123),
+    (123 >= 1234),
+    (123 >= -123),
+    (-123 >= 123),
+    (123 >= 12),
+    (123 > 123),
+    (123 > 1234),
+    (123 > -123),
+    (-123 > 123),
+    (123 > 12),
+    (123 <= 123),
+    (123 <= 1234),
+    (123 <= -123),
+    (-123 <= 123),
+    (123 <= 12),
+    (123 < 123),
+    (123 < 1234),
+    (123 < -123),
+    (-123 < 123),
+    (123 < 12),
+    (123 != 123),
+    (123 != 1234),
+    (123 != -123),
+    (-123 != 123),
+    (123 != 12);
+
+{{Fail .Test}}
+INSERT INTO tbl4 VALUES
+    (1 = 'abc');
+
+SELECT * FROM tbl4;

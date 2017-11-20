@@ -6,7 +6,7 @@
 
 DROP TABLE IF EXISTS tbl1;
 
-CREATE TABLE tbl1 (c1 varchar(64) not null, c2 int not null)
+CREATE TABLE tbl1 (c1 varchar(64) not null, c2 int not null);
 
 INSERT INTO tbl1 VALUES ('ABC', 456);
 

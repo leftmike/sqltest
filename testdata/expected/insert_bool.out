@@ -22,3 +22,144 @@ SELECT * FROM tbl2;
      --  --
  1 true 456
 (1 row)
+DROP TABLE IF EXISTS tbl3;
+CREATE TABLE tbl3 (c1 bool);
+INSERT INTO tbl3 VALUES
+    (TRUE),
+    (true),
+    ('t'),
+    ('true'),
+    ('y'),
+    ('yes'),
+    ('on'),
+    ('1'),
+    (FALSE),
+    (false),
+    ('f'),
+    ('false'),
+    ('n'),
+    ('no'),
+    ('off'),
+    ('0');
+SELECT * from tbl3;
+       c1
+       --
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+  9  true
+ 10  true
+ 11  true
+ 12  true
+ 13  true
+ 14  true
+ 15  true
+ 16  true
+(16 rows)
+DROP TABLE IF EXISTS tbl4;
+CREATE TABLE tbl4 (c1 bool);
+INSERT INTO tbl4 VALUES
+    (true AND true),
+    (true AND false),
+    (false AND true),
+    (false AND false),
+    (true OR true),
+    (true OR false),
+    (false OR true),
+    (false OR false),
+    (NOT true),
+    (NOT false),
+    (NOT true AND true),
+    (NOT true AND false),
+    (NOT false AND true),
+    (NOT false AND false),
+    (true AND NOT true),
+    (true AND NOT false),
+    (false AND NOT true),
+    (false AND NOT false),
+    (1 = 2),
+    (1 = 1),
+    (2 = 1),
+    (123 >= 123),
+    (123 >= 1234),
+    (123 >= -123),
+    (-123 >= 123),
+    (123 >= 12),
+    (123 > 123),
+    (123 > 1234),
+    (123 > -123),
+    (-123 > 123),
+    (123 > 12),
+    (123 <= 123),
+    (123 <= 1234),
+    (123 <= -123),
+    (-123 <= 123),
+    (123 <= 12),
+    (123 < 123),
+    (123 < 1234),
+    (123 < -123),
+    (-123 < 123),
+    (123 < 12),
+    (123 != 123),
+    (123 != 1234),
+    (123 != -123),
+    (-123 != 123),
+    (123 != 12);
+{{Fail .Test}}
+INSERT INTO tbl4 VALUES
+    (1 = 'abc');
+SELECT * FROM tbl4;
+       c1
+       --
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25  true
+ 26  true
+ 27  true
+ 28  true
+ 29  true
+ 30  true
+ 31  true
+ 32  true
+ 33  true
+ 34  true
+ 35  true
+ 36  true
+ 37  true
+ 38  true
+ 39  true
+ 40  true
+ 41  true
+ 42  true
+ 43  true
+ 44  true
+ 45  true
+ 46  true
+(46 rows)
