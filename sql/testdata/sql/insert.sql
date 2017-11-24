@@ -41,6 +41,7 @@ INSERT INTO tbl3 (c4, c2, c3, c1) VALUES
     (20, 30, 'bb', 'ccc'),
     (30, 40, 'ccc', 'dddd'),
     (40, 50, 'dddd', 'eeeee'),
-    (50, 60, 'eeeee', 'ffffff');
+    (50, 60, 'eeeee', 'ffffff'),
+    (60, 70, 'ffffff', 'ggggggg');
 
 SELECT * from tbl3;

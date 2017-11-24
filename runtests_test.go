@@ -39,7 +39,7 @@ func (_ testDialect) DriverName() string {
 
 func TestRunTests(t *testing.T) {
 	var tr testReporter
-	err := sqltest.RunTests("testdata/test", testRunner{}, &tr, testDialect{})
+	err := sqltest.RunTests("testdata", testRunner{}, &tr, testDialect{}, false)
 	if err != nil {
 		t.Errorf("RunTests() failed with %s", err)
 	}

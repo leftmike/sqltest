@@ -44,14 +44,14 @@ func (_ DefaultDialect) ColumnTypeArg(typ string, arg int) string {
 // RunTests runs all of the tests in a directory: <dir>/sql/*.sql contains the tests and
 // <dir>/expected/*.out contains the expected output for each sql file. The output from each
 // sql file will get written to <dir>/output/*.out.
-func RunTests(dir string, run Runner, report Reporter, dialect Dialect) error {
+func RunTests(dir string, run Runner, report Reporter, dialect Dialect, update bool) error {
 	files, err := filepath.Glob(filepath.Join(dir, "sql", "*.sql"))
 	if err != nil {
 		return fmt.Errorf("Glob(%q) failed with %s", filepath.Join(dir, "sql", "*.sql"), err)
 	}
 
 	for _, sqlname := range files {
-		err, ret := testFile(dir, sqlname, run, dialect)
+		err, ret := testFile(dir, sqlname, run, dialect, update)
 		if err != nil {
 			return err
 		}
@@ -64,7 +64,7 @@ func RunTests(dir string, run Runner, report Reporter, dialect Dialect) error {
 	return nil
 }
 
-func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
+func testFile(dir, sqlname string, run Runner, dialect Dialect, update bool) (error, error) {
 	// Get filename without .sql
 	basename := filepath.Base(sqlname)
 	basename = basename[:strings.LastIndexByte(basename, '.')]
@@ -117,17 +117,24 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect) (error, error) {
 	}
 
 	expname := filepath.Join(dir, "expected", basename+".out")
-	exp, _ := ioutil.ReadFile(expname) // Ignore the error; exp will be nil in that case.
+	if update {
+		err = ioutil.WriteFile(expname, out.Bytes(), 0666)
+		if err != nil {
+			return fmt.Errorf("WriteFile(%q) failed with %s", expname, err), nil
+		}
+	} else {
+		exp, _ := ioutil.ReadFile(expname) // Ignore the error; exp will be nil in that case.
 
-	if exp == nil {
-		return nil, fmt.Errorf("no expected output for %s", sqlname)
-	}
+		if exp == nil {
+			return nil, fmt.Errorf("no expected output for %s", sqlname)
+		}
 
-	expString := string(exp)
-	outString := out.String()
-	if expString != outString {
-		return nil, fmt.Errorf("%s and %s are different\n%v", outname, expname,
-			diff.LineDiff(expString, outString))
+		expString := string(exp)
+		outString := out.String()
+		if expString != outString {
+			return nil, fmt.Errorf("%s and %s are different\n%v", outname, expname,
+				diff.LineDiff(expString, outString))
+		}
 	}
 
 	return nil, nil

@@ -36,13 +36,15 @@ INSERT INTO tbl3 (c4, c2, c3, c1) VALUES
     (20, 30, 'bb', 'ccc'),
     (30, 40, 'ccc', 'dddd'),
     (40, 50, 'dddd', 'eeeee'),
-    (50, 60, 'eeeee', 'ffffff');
+    (50, 60, 'eeeee', 'ffffff'),
+    (60, 70, 'ffffff', 'ggggggg');
 SELECT * from tbl3;
-       c1 c2    c3 c4
-       -- --    -- --
- 1     bb 20     a 10
- 2    ccc 30    bb 20
- 3   dddd 40   ccc 30
- 4  eeeee 50  dddd 40
- 5 ffffff 60 eeeee 50
-(5 rows)
+        c1 c2     c3 c4
+        -- --     -- --
+ 1      bb 20      a 10
+ 2     ccc 30     bb 20
+ 3    dddd 40    ccc 30
+ 4   eeeee 50   dddd 40
+ 5  ffffff 60  eeeee 50
+ 6 ggggggg 70 ffffff 60
+(6 rows)
