@@ -1,0 +1,29 @@
+--
+-- Test SELECT ... WHERE w/out FROM
+--
+-- mysql doesn't like this syntax
+-- {{if eq Dialect "mysql"}}{{Skip}}{{end}}
+SELECT 1 AS c1, 2 AS c2 WHERE 1 = 1;
+   c1 c2
+   -- --
+ 1  1  2
+(1 row)
+SELECT 1 AS c1, 2 AS c2 WHERE 0 = 1;
+  c1 c2
+  -- --
+(no rows)
+SELECT 1 + 2 - 3 as c1, 12 / 4 * 3 as c2;
+   c1 c2
+   -- --
+ 1  0  9
+(1 row)
+SELECT 1 - 2 + 3 as c1, 12 * 4 / 3 as c2;
+   c1 c2
+   -- --
+ 1  2 16
+(1 row)
+SELECT 300 * 2 + 3 / - 4 as c1, 2 + 3 * 4 as c2, 2 * 3 + 4 as c3, - 2 * 3 as c4, - (2 * 3) as c5;
+    c1 c2 c3 c4 c5
+    -- -- -- -- --
+ 1 600 14 10 -6 -6
+(1 row)
