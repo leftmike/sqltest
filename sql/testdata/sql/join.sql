@@ -36,6 +36,31 @@ INSERT INTO orders VALUES
     (5, 7, 18, 'Gasoline'),
     (6, 9, 3, 'Taxes');
 
+SELECT * FROM customers CROSS JOIN orders;
+
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers CROSS JOIN orders;
+
+SELECT * FROM customers JOIN orders ON customers.customer_id = orders.customer_id;
+
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers JOIN orders ON customers.customer_id = orders.customer_id;
+
+SELECT * FROM customers JOIN orders USING (customer_id);
+
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers JOIN orders USING (customer_id);
+
+SELECT * FROM customers LEFT JOIN orders ON customers.customer_id = orders.customer_id;
+
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers LEFT JOIN orders ON customers.customer_id = orders.customer_id;
+
+SELECT * FROM customers LEFT JOIN orders USING (customer_id);
+
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers LEFT JOIN orders USING (customer_id);
+
 SELECT * FROM customers CROSS JOIN empty_orders;
 
 SELECT * FROM customers JOIN empty_orders ON customers.customer_id = empty_orders.customer_id;

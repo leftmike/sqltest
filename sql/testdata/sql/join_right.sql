@@ -40,6 +40,12 @@ INSERT INTO orders VALUES
 
 SELECT * FROM customers RIGHT JOIN orders ON customers.customer_id = orders.customer_id;
 
+SELECT customers.customer, orders.item, orders.price
+    FROM customers RIGHT JOIN orders ON customers.customer_id = orders.customer_id;
+
+SELECT customers.customer, orders.item, orders.price
+    FROM customers RIGHT JOIN orders USING (customer_id);
+
 SELECT * FROM customers RIGHT JOIN empty_orders
     ON customers.customer_id = empty_orders.customer_id;
 

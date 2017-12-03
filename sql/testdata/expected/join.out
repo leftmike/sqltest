@@ -25,6 +25,203 @@ INSERT INTO orders VALUES
     (4, 6, 20, 'Gasoline'),
     (5, 7, 18, 'Gasoline'),
     (6, 9, 3, 'Taxes');
+SELECT * FROM customers CROSS JOIN orders;
+    customer_id customer order_id customer_id price      item
+    ----------- -------- -------- ----------- -----      ----
+  1           1   Andrew        1           1    10 Groceries
+  2           1   Andrew        2           1     1     Candy
+  3           1   Andrew        3           3     2    Snacks
+  4           1   Andrew        4           6    20  Gasoline
+  5           1   Andrew        5           7    18  Gasoline
+  6           1   Andrew        6           9     3     Taxes
+  7           2    Barry        1           1    10 Groceries
+  8           2    Barry        2           1     1     Candy
+  9           2    Barry        3           3     2    Snacks
+ 10           2    Barry        4           6    20  Gasoline
+ 11           2    Barry        5           7    18  Gasoline
+ 12           2    Barry        6           9     3     Taxes
+ 13           3    Cindy        1           1    10 Groceries
+ 14           3    Cindy        2           1     1     Candy
+ 15           3    Cindy        3           3     2    Snacks
+ 16           3    Cindy        4           6    20  Gasoline
+ 17           3    Cindy        5           7    18  Gasoline
+ 18           3    Cindy        6           9     3     Taxes
+ 19           4    David        1           1    10 Groceries
+ 20           4    David        2           1     1     Candy
+ 21           4    David        3           3     2    Snacks
+ 22           4    David        4           6    20  Gasoline
+ 23           4    David        5           7    18  Gasoline
+ 24           4    David        6           9     3     Taxes
+ 25           5   Edward        1           1    10 Groceries
+ 26           5   Edward        2           1     1     Candy
+ 27           5   Edward        3           3     2    Snacks
+ 28           5   Edward        4           6    20  Gasoline
+ 29           5   Edward        5           7    18  Gasoline
+ 30           5   Edward        6           9     3     Taxes
+ 31           6    Frank        1           1    10 Groceries
+ 32           6    Frank        2           1     1     Candy
+ 33           6    Frank        3           3     2    Snacks
+ 34           6    Frank        4           6    20  Gasoline
+ 35           6    Frank        5           7    18  Gasoline
+ 36           6    Frank        6           9     3     Taxes
+ 37           7     Greg        1           1    10 Groceries
+ 38           7     Greg        2           1     1     Candy
+ 39           7     Greg        3           3     2    Snacks
+ 40           7     Greg        4           6    20  Gasoline
+ 41           7     Greg        5           7    18  Gasoline
+ 42           7     Greg        6           9     3     Taxes
+ 43           8    Harry        1           1    10 Groceries
+ 44           8    Harry        2           1     1     Candy
+ 45           8    Harry        3           3     2    Snacks
+ 46           8    Harry        4           6    20  Gasoline
+ 47           8    Harry        5           7    18  Gasoline
+ 48           8    Harry        6           9     3     Taxes
+(48 rows)
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers CROSS JOIN orders;
+    order_id customer_id customer      item
+    -------- ----------- --------      ----
+  1        1           1   Andrew Groceries
+  2        1           2    Barry Groceries
+  3        1           3    Cindy Groceries
+  4        1           4    David Groceries
+  5        1           5   Edward Groceries
+  6        1           6    Frank Groceries
+  7        1           7     Greg Groceries
+  8        1           8    Harry Groceries
+  9        2           1   Andrew     Candy
+ 10        2           2    Barry     Candy
+ 11        2           3    Cindy     Candy
+ 12        2           4    David     Candy
+ 13        2           5   Edward     Candy
+ 14        2           6    Frank     Candy
+ 15        2           7     Greg     Candy
+ 16        2           8    Harry     Candy
+ 17        3           1   Andrew    Snacks
+ 18        3           2    Barry    Snacks
+ 19        3           3    Cindy    Snacks
+ 20        3           4    David    Snacks
+ 21        3           5   Edward    Snacks
+ 22        3           6    Frank    Snacks
+ 23        3           7     Greg    Snacks
+ 24        3           8    Harry    Snacks
+ 25        4           1   Andrew  Gasoline
+ 26        4           2    Barry  Gasoline
+ 27        4           3    Cindy  Gasoline
+ 28        4           4    David  Gasoline
+ 29        4           5   Edward  Gasoline
+ 30        4           6    Frank  Gasoline
+ 31        4           7     Greg  Gasoline
+ 32        4           8    Harry  Gasoline
+ 33        5           1   Andrew  Gasoline
+ 34        5           2    Barry  Gasoline
+ 35        5           3    Cindy  Gasoline
+ 36        5           4    David  Gasoline
+ 37        5           5   Edward  Gasoline
+ 38        5           6    Frank  Gasoline
+ 39        5           7     Greg  Gasoline
+ 40        5           8    Harry  Gasoline
+ 41        6           1   Andrew     Taxes
+ 42        6           2    Barry     Taxes
+ 43        6           3    Cindy     Taxes
+ 44        6           4    David     Taxes
+ 45        6           5   Edward     Taxes
+ 46        6           6    Frank     Taxes
+ 47        6           7     Greg     Taxes
+ 48        6           8    Harry     Taxes
+(48 rows)
+SELECT * FROM customers JOIN orders ON customers.customer_id = orders.customer_id;
+   customer_id customer order_id customer_id price      item
+   ----------- -------- -------- ----------- -----      ----
+ 1           1   Andrew        1           1    10 Groceries
+ 2           1   Andrew        2           1     1     Candy
+ 3           3    Cindy        3           3     2    Snacks
+ 4           6    Frank        4           6    20  Gasoline
+ 5           7     Greg        5           7    18  Gasoline
+(5 rows)
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers JOIN orders ON customers.customer_id = orders.customer_id;
+   order_id customer_id customer      item
+   -------- ----------- --------      ----
+ 1        1           1   Andrew Groceries
+ 2        2           1   Andrew     Candy
+ 3        3           3    Cindy    Snacks
+ 4        4           6    Frank  Gasoline
+ 5        5           7     Greg  Gasoline
+(5 rows)
+SELECT * FROM customers JOIN orders USING (customer_id);
+   customer_id customer order_id price      item
+   ----------- -------- -------- -----      ----
+ 1           1   Andrew        1    10 Groceries
+ 2           1   Andrew        2     1     Candy
+ 3           3    Cindy        3     2    Snacks
+ 4           6    Frank        4    20  Gasoline
+ 5           7     Greg        5    18  Gasoline
+(5 rows)
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers JOIN orders USING (customer_id);
+   order_id customer_id customer      item
+   -------- ----------- --------      ----
+ 1        1           1   Andrew Groceries
+ 2        2           1   Andrew     Candy
+ 3        3           3    Cindy    Snacks
+ 4        4           6    Frank  Gasoline
+ 5        5           7     Greg  Gasoline
+(5 rows)
+SELECT * FROM customers LEFT JOIN orders ON customers.customer_id = orders.customer_id;
+   customer_id customer order_id customer_id price      item
+   ----------- -------- -------- ----------- -----      ----
+ 1           1   Andrew        1           1    10 Groceries
+ 2           1   Andrew        2           1     1     Candy
+ 3           2    Barry                                     
+ 4           3    Cindy        3           3     2    Snacks
+ 5           4    David                                     
+ 6           5   Edward                                     
+ 7           6    Frank        4           6    20  Gasoline
+ 8           7     Greg        5           7    18  Gasoline
+ 9           8    Harry                                     
+(9 rows)
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers LEFT JOIN orders ON customers.customer_id = orders.customer_id;
+   order_id customer_id customer      item
+   -------- ----------- --------      ----
+ 1                    2    Barry          
+ 2                    4    David          
+ 3                    5   Edward          
+ 4                    8    Harry          
+ 5        1           1   Andrew Groceries
+ 6        2           1   Andrew     Candy
+ 7        3           3    Cindy    Snacks
+ 8        4           6    Frank  Gasoline
+ 9        5           7     Greg  Gasoline
+(9 rows)
+SELECT * FROM customers LEFT JOIN orders USING (customer_id);
+   customer_id customer order_id price      item
+   ----------- -------- -------- -----      ----
+ 1           1   Andrew        1    10 Groceries
+ 2           1   Andrew        2     1     Candy
+ 3           2    Barry                         
+ 4           3    Cindy        3     2    Snacks
+ 5           4    David                         
+ 6           5   Edward                         
+ 7           6    Frank        4    20  Gasoline
+ 8           7     Greg        5    18  Gasoline
+ 9           8    Harry                         
+(9 rows)
+SELECT orders.order_id, customers.customer_id, customers.customer, orders.item
+    FROM customers LEFT JOIN orders USING (customer_id);
+   order_id customer_id customer      item
+   -------- ----------- --------      ----
+ 1                    2    Barry          
+ 2                    4    David          
+ 3                    5   Edward          
+ 4                    8    Harry          
+ 5        1           1   Andrew Groceries
+ 6        2           1   Andrew     Candy
+ 7        3           3    Cindy    Snacks
+ 8        4           6    Frank  Gasoline
+ 9        5           7     Greg  Gasoline
+(9 rows)
 SELECT * FROM customers CROSS JOIN empty_orders;
   customer_id customer order_id customer_id price item
   ----------- -------- -------- ----------- ----- ----
