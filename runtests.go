@@ -17,20 +17,31 @@ import (
 var Skipped = fmt.Errorf("skipped")
 
 type Runner interface {
+	// RunExec is used to execute a single SQL statement which must not return rows.
 	RunExec(tst *Test) error
+	// RunQuery is used to execute a single SQL statement which returns a slice of column
+	// names and a slice of rows.
 	RunQuery(tst *Test) ([]string, [][]string, error)
 }
 
 type Reporter interface {
+	// Report on the results of a single test.
 	Report(test string, err error) error
 }
 
+// Dialect specifies the behavior of a particular SQL implementation.
 type Dialect interface {
+	// DriverName is the name of the dialect; eg. postgres.
 	DriverName() string
+	// ColumnType maps a particular type into something that the implementation understands.
 	ColumnType(typ string) string
+	// ColumnTypeArg maps a particular type with an argument into something that the
+	// implementation understands.
 	ColumnTypeArg(typ string, arg int) string
 }
 
+// DefaultDialect provides default behavior; most implementation specific dialects can be based
+// on this one.
 type DefaultDialect struct{}
 
 func (_ DefaultDialect) ColumnType(typ string) string {
