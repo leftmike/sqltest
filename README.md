@@ -7,20 +7,18 @@ Test SQL compatibility between different implementations.
 
 ## Running Tests
 
-The tests are run using the Go
-[testing](https://golang.org/pkg/testing/) package: `go test`.
+The tests are run using `sqltestdb` which is written in [Go](https://golang.org/).
+
 Each test is a templatized file of SQL
 statements run against a particular implementation and the output compared with the expected
 output. These files are in `sql/testdata/sql`, `sql/testdata/output`, and
 `sql/testdata/expected`.
 
-The files in `testdata/*` are for testing the *implementation* of sqltest.
+The files in `pkg/sqltest/testdata/*` are for testing the *implementation* of sqltest.
 
-To control which implementation is run, use a `-run` flag; for example, to run just postgres,
-use `-run=/postgres`.
+To control which implementation is run, specify it as argument to `sqltestdb`.
 
-Use the following flags to control the tests; they need to be proceeded by a single `-args`
-argument:
+Use the following flags to control the tests:
 * `-update`: update the expected output.
 * `-testdata <directory>`: specify a different directory for testdata; the default is `testdata`.
 * `-sqlite3`: data source to use for sqlite3; the default is `:memory:`.
@@ -30,17 +28,17 @@ argument:
 I use dev/test RDS instances in AWS for testing. For example, to run against just postgres, use
 the following command:
 ```
-go test ./sql -v -run=/postgres -args -postgres "host=<host>.rds.amazonaws.com port=5432 dbname=<dbname> user=<user> password=<password>"
+sqltestdb -testdata sql/testdata -postgres "host=<host>.rds.amazonaws.com port=5432 dbname=<dbname> user=<user> password=<password>" postgres
 ```
 
-To update the expected output to be the output from postres, add `-update` after `-args`.
+To update the expected output to be the output from postres, add `-update`.
 ```
-go test ./sql -v -run=/postgres -args -update -postgres ...
+sqltestdb -update -testdata sql/testdata -postgres ...
 ```
 
 Finally, to run all of the tests against all of the supported implementations, do the following:
 ```
-go test ./sql -args -postgres "host=<host>.rds.amazonaws.com port=5432 dbname=<dbname> user=<user> password=<password>" -mysql "<user>:<password>@tcp(<host>.rds.amazonaws.com)/<dbname>"
+sqltestdb -testdata sql/testdata -postgres "host=<host>.rds.amazonaws.com port=5432 dbname=<dbname> user=<user> password=<password>" -mysql "<user>:<password>@tcp(<host>.rds.amazonaws.com)/<dbname>" postgres mysql sqlite3
 ```
 
 ## Writing Tests

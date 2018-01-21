@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"sqltest"
+	"github.com/leftmike/sqltest/pkg/sqltest"
 )
 
 type templateDialect struct {

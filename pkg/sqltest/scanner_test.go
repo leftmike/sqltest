@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"sqltest"
+	"github.com/leftmike/sqltest/pkg/sqltest"
 )
 
 func TestScanner(t *testing.T) {

@@ -3,7 +3,7 @@ package sqltest_test
 import (
 	"testing"
 
-	"sqltest"
+	"github.com/leftmike/sqltest/pkg/sqltest"
 )
 
 type testRunner struct{}

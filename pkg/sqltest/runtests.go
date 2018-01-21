@@ -61,6 +61,10 @@ func RunTests(dir string, run Runner, report Reporter, dialect Dialect, update b
 		return fmt.Errorf("Glob(%q) failed with %s", filepath.Join(dir, "sql", "*.sql"), err)
 	}
 
+	if len(files) == 0 {
+		return fmt.Errorf("no sql files found in %s", dir)
+	}
+
 	for _, sqlname := range files {
 		err, ret := testFile(dir, sqlname, run, dialect, update)
 		if err != nil {
