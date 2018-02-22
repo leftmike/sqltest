@@ -27,6 +27,12 @@ SELECT * FROM tbl1;
 
 SELECT tbl1.* FROM tbl1;
 
+SELECT tbl1.*, c1 + c2 + c3 AS total FROM tbl1;
+
+SELECT c1, c2, c3 FROM tbl1;
+
+SELECT c2, c3, c1 FROM tbl1;
+
 SELECT c2 FROM tbl1;
 
 SELECT c3, c1 FROM tbl1;

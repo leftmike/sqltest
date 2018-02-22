@@ -1,0 +1,95 @@
+--
+-- Test SELECT and GROUP BY
+--
+-- Based on Google's Cloud Platform examples: https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#appendix-a-examples-with-sample-data
+--
+DROP TABLE IF EXISTS Roster;
+CREATE TABLE Roster (LastName {{TEXT 128}}, SchoolID int);
+INSERT INTO Roster VALUES
+    ('Adams', 50),
+    ('Buchanan', 52),
+    ('Coolidge', 52),
+    ('Davis', 51),
+    ('Eisenhower', 77);
+DROP TABLE IF EXISTS PlayerStats;
+CREATE TABLE PlayerStats (LastName {{TEXT 128}}, OpponentID int, PointsScored int);
+INSERT INTO PlayerStats VALUES
+    ('Adams', 51, 3),
+    ('Buchanan', 77, 0),
+    ('Coolidge', 77, 1),
+    ('Adams', 52, 4),
+    ('Buchanan', 50, 13);
+DROP TABLE IF EXISTS TeamMascot;
+CREATE TABLE TeamMascot (SchoolId int, Mascot {{TEXT 128}});
+INSERT INTO TeamMascot VALUES
+    (50, 'Jaguars'),
+    (51, 'Knights'),
+    (52, 'Lakers'),
+    (53, 'Mustangs');
+SELECT * FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+   lastname schoolid schoolid  mascot
+   -------- -------- --------  ------
+ 1    Adams       50       50 Jaguars
+ 2 Buchanan       52       52  Lakers
+ 3 Coolidge       52       52  Lakers
+ 4    Davis       51       51 Knights
+(4 rows)
+SELECT * FROM Roster CROSS JOIN TeamMascot;
+      lastname schoolid schoolid   mascot
+      -------- -------- --------   ------
+  1      Adams       50       50  Jaguars
+  2      Adams       50       51  Knights
+  3      Adams       50       52   Lakers
+  4      Adams       50       53 Mustangs
+  5   Buchanan       52       50  Jaguars
+  6   Buchanan       52       51  Knights
+  7   Buchanan       52       52   Lakers
+  8   Buchanan       52       53 Mustangs
+  9   Coolidge       52       50  Jaguars
+ 10   Coolidge       52       51  Knights
+ 11   Coolidge       52       52   Lakers
+ 12   Coolidge       52       53 Mustangs
+ 13      Davis       51       50  Jaguars
+ 14      Davis       51       51  Knights
+ 15      Davis       51       52   Lakers
+ 16      Davis       51       53 Mustangs
+ 17 Eisenhower       77       50  Jaguars
+ 18 Eisenhower       77       51  Knights
+ 19 Eisenhower       77       52   Lakers
+ 20 Eisenhower       77       53 Mustangs
+(20 rows)
+SELECT * FROM Roster FULL JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+     lastname schoolid schoolid   mascot
+     -------- -------- --------   ------
+ 1                           53 Mustangs
+ 2      Adams       50       50  Jaguars
+ 3   Buchanan       52       52   Lakers
+ 4   Coolidge       52       52   Lakers
+ 5      Davis       51       51  Knights
+ 6 Eisenhower       77                  
+(6 rows)
+SELECT * FROM Roster LEFT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+     lastname schoolid schoolid  mascot
+     -------- -------- --------  ------
+ 1      Adams       50       50 Jaguars
+ 2   Buchanan       52       52  Lakers
+ 3   Coolidge       52       52  Lakers
+ 4      Davis       51       51 Knights
+ 5 Eisenhower       77                 
+(5 rows)
+SELECT * FROM Roster RIGHT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+   lastname schoolid schoolid   mascot
+   -------- -------- --------   ------
+ 1                         53 Mustangs
+ 2    Adams       50       50  Jaguars
+ 3 Buchanan       52       52   Lakers
+ 4 Coolidge       52       52   Lakers
+ 5    Davis       51       51  Knights
+(5 rows)
+SELECT LastName, SUM(PointsScored) FROM PlayerStats GROUP BY LastName;
+   lastname sum
+   -------- ---
+ 1    Adams   7
+ 2 Buchanan  13
+ 3 Coolidge   1
+(3 rows)

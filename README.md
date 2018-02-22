@@ -16,7 +16,7 @@ output. These files are in `sql/testdata/sql`, `sql/testdata/output`, and
 
 The files in `pkg/sqltest/testdata/*` are for testing the *implementation* of sqltest.
 
-To control which implementation is run, specify it as argument to `sqltestdb`.
+To control which implementation is run, specify it as an argument to `sqltestdb`.
 
 Use the following flags to control the tests:
 * `-update`: update the expected output.
