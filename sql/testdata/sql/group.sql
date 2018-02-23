@@ -30,3 +30,11 @@ SELECT count(*) AS count_all, c1 + c2 AS c, count(c3), count(c4) FROM tbl1 GROUP
 SELECT c1, c2, count(*) AS count_all FROM tbl1 GROUP BY c1, c2;
 
 SELECT c1, c2, count(*) AS count_all FROM tbl1 GROUP BY c2, c1;
+
+SELECT c1 FROM tbl1 GROUP BY c1 HAVING c1 > 1;
+
+SELECT count(*) AS count_all FROM tbl1 HAVING count(*) > 1;
+
+SELECT count(*) AS count_all FROM tbl1 HAVING count(*) > 100;
+
+SELECT c1, c2 FROM tbl1 GROUP BY c1, c2 HAVING c1 < 3;
