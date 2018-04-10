@@ -95,7 +95,8 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect, update bool) (er
 	scanner := NewScanner(sqlf)
 	scanner.Filename = basename + ".sql"
 	for {
-		tst, err := scanner.Scan()
+		var tst *Test
+		tst, err = scanner.Scan()
 		if err != nil {
 			return err, nil
 		}

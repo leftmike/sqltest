@@ -1,6 +1,7 @@
 --
 -- Test SELECT ... w/ aggregate functions
 --
+-- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
 DROP TABLE IF EXISTS tbl1;
 CREATE TABLE tbl1 (c1 int, c2 int, c3 int);
 INSERT INTO tbl1 VALUES

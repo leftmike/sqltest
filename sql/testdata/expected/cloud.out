@@ -3,6 +3,7 @@
 --
 -- Based on Google's Cloud Platform examples: https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#appendix-a-examples-with-sample-data
 --
+-- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
 DROP TABLE IF EXISTS Roster;
 CREATE TABLE Roster (LastName {{TEXT 128}}, SchoolID int);
 INSERT INTO Roster VALUES
