@@ -1,6 +1,7 @@
 package sqltest
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
@@ -139,13 +140,12 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect, update bool) (er
 			return fmt.Errorf("WriteFile(%q) failed with %s", expname, err), nil
 		}
 	} else {
-		exp, _ := ioutil.ReadFile(expname) // Ignore the error; exp will be nil in that case.
+		expString := readFile(expname)
 
-		if exp == nil {
+		if expString == "" {
 			return nil, fmt.Errorf("no expected output for %s", sqlname)
 		}
 
-		expString := string(exp)
 		outString := out.String()
 		if expString != outString {
 			return nil, fmt.Errorf("%s and %s are different\n%v", outname, expname,
@@ -154,6 +154,27 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect, update bool) (er
 	}
 
 	return nil, nil
+}
+
+func readFile(name string) string {
+	f, err := os.Open(name)
+	if err != nil {
+		return ""
+	}
+	defer f.Close()
+
+	var out bytes.Buffer
+	s := bufio.NewScanner(f)
+	for s.Scan() {
+		fmt.Fprintln(&out, s.Text())
+	}
+
+	err = s.Err()
+	if err != nil {
+		return ""
+	}
+
+	return out.String()
 }
 
 type resultRows [][]string
