@@ -9,11 +9,12 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	_ "github.com/mattn/go-sqlite3"
+	//_ "github.com/mattn/go-sqlite3"
 
 	"github.com/leftmike/sqltest/pkg/sqltest"
 )
 
+/*
 type sqlite3Dialect struct {
 	sqltest.DefaultDialect
 }
@@ -21,6 +22,7 @@ type sqlite3Dialect struct {
 func (_ sqlite3Dialect) DriverName() string {
 	return "sqlite3"
 }
+*/
 
 type postgresDialect struct{}
 
@@ -57,7 +59,7 @@ var (
 	update   = flag.Bool("update", false, "update expected to output")
 	testData = flag.String("testdata", "testdata", "directory of testdata")
 
-	sqlite3Source  = flag.String("sqlite3", ":memory:", "data source to use for sqlite3")
+	//	sqlite3Source  = flag.String("sqlite3", ":memory:", "data source to use for sqlite3")
 	postgresSource = flag.String("postgres", "", "data source to use for postgres")
 	mysqlSource    = flag.String("mysql", "", "data source to use for mysql")
 )
@@ -69,7 +71,7 @@ type driver struct {
 }
 
 var Drivers = map[string]driver{
-	"sqlite3":  {"sqlite3", sqlite3Dialect{}, sqlite3Source},
+	//	"sqlite3":  {"sqlite3", sqlite3Dialect{}, sqlite3Source},
 	"postgres": {"postgres", postgresDialect{}, postgresSource},
 	"mysql":    {"mysql", mysqlDialect{}, mysqlSource},
 }

@@ -10,6 +10,8 @@ DROP TABLE IF EXISTS tbl2;
 
 CREATE TABLE tbl2 (c1 int2, c2 int4, c3 int8);
 
+CREATE TABLE IF NOT EXISTS tbl2 (c1 bool);
+
 DROP TABLE IF EXISTS tbl3;
 
 CREATE TABLE tbl3 (c1 double precision, c2 real);

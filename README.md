@@ -41,6 +41,11 @@ Finally, to run all of the tests against all of the supported implementations, d
 sqltestdb -testdata sql/testdata -postgres "host=<host>.rds.amazonaws.com port=5432 dbname=<dbname> user=<user> password=<password>" -mysql "<user>:<password>@tcp(<host>.rds.amazonaws.com)/<dbname>" postgres mysql sqlite3
 ```
 
+To test against a local postgres instance, I use:
+```
+sqltestdb -testdata sql/testdata -postgres "host=localhost port=5432 dbname=test sslmode=disable" postgres
+```
+
 ## Writing Tests
 
 Template actions are delimited by `{{` and `}}` in the test files; see the Go
