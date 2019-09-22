@@ -1,4 +1,2 @@
 cmd/sqltestdb/sqltestdb
-pkg/sqltest/testdata/output
-sql/testdata/output
 test*.sh
