@@ -4,8 +4,13 @@ import (
 	"flag"
 	"log"
 
+	"github.com/leftmike/sqltest/pkg/awsrds"
 	"github.com/leftmike/sqltest/pkg/gosql"
 	"github.com/leftmike/sqltest/pkg/sqltest"
+)
+
+var (
+	useAWS = flag.Bool("aws", false, "use an AWS RDS database")
 )
 
 type report struct {
@@ -32,6 +37,14 @@ func main() {
 		if !ok {
 			log.Printf("invalid driver: %s\n", arg)
 			continue
+		}
+		if *d.Source == "" && *useAWS {
+			s, err := awsrds.EnsurePostgresRDS("sqltest-postgresql")
+			if err != nil {
+				log.Printf("error: %s: %s\n", d.Driver, err)
+				continue
+			}
+			*d.Source = s
 		}
 		err := d.RunTests(report{d.Driver})
 		if err != nil {

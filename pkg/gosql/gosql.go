@@ -65,7 +65,7 @@ var (
 type driver struct {
 	Driver  string
 	dialect sqltest.Dialect
-	source  *string
+	Source  *string
 }
 
 var Drivers = map[string]driver{
@@ -75,12 +75,12 @@ var Drivers = map[string]driver{
 }
 
 func (d driver) RunTests(r sqltest.Reporter) error {
-	if *d.source == "" {
+	if *d.Source == "" {
 		return fmt.Errorf("no source for driver %s", d.Driver)
 	}
 
 	var run sqltest.DBRunner
-	err := run.Connect(d.Driver, *d.source)
+	err := run.Connect(d.Driver, *d.Source)
 	if err != nil {
 		return err
 	}

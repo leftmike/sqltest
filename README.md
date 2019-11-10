@@ -24,11 +24,16 @@ Use the following flags to control the tests:
 * `-sqlite3`: data source to use for sqlite3; the default is `:memory:`.
 * `-postgres`: data source to use for postgres; there is no default.
 * `-mysql`: data source to use for mysql; there is no default.
+* `-aws`: use an AWS RDS instance for postgres; one will be started if necessary.
 
 I use dev/test RDS instances in AWS for testing. For example, to run against just postgres, use
 the following command:
 ```
 sqltestdb -testdata sql/testdata -postgres "host=<host>.rds.amazonaws.com port=5432 dbname=<dbname> user=<user> password=<password>" postgres
+```
+or
+```
+sqltestdb -testdata sql/testdata -aws postgres
 ```
 
 To update the expected output to be the output from postres, add `-update`.
