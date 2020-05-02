@@ -15,7 +15,7 @@ INSERT INTO tbl1 VALUES
     (concat(123, 'ABC')),
     ('abc' || true),
     (false || 'abc');
-SELECT * FROM tbl1;
+SELECT c1 FROM tbl1;
          c1
          --
  1   123ABC

@@ -37,14 +37,19 @@ INSERT INTO TeamMascot VALUES
     (52, 'Lakers'),
     (53, 'Mustangs');
 
-SELECT * FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
 
-SELECT * FROM Roster CROSS JOIN TeamMascot;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster CROSS JOIN TeamMascot;
 
-SELECT * FROM Roster FULL JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster FULL JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
 
-SELECT * FROM Roster LEFT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster LEFT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
 
-SELECT * FROM Roster RIGHT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster RIGHT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
 
 SELECT LastName, SUM(PointsScored) FROM PlayerStats GROUP BY LastName;

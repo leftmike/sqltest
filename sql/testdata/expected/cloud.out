@@ -27,7 +27,8 @@ INSERT INTO TeamMascot VALUES
     (51, 'Knights'),
     (52, 'Lakers'),
     (53, 'Mustangs');
-SELECT * FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
    lastname schoolid schoolid  mascot
    -------- -------- --------  ------
  1    Adams       50       50 Jaguars
@@ -35,7 +36,8 @@ SELECT * FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
  3 Coolidge       52       52  Lakers
  4    Davis       51       51 Knights
 (4 rows)
-SELECT * FROM Roster CROSS JOIN TeamMascot;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster CROSS JOIN TeamMascot;
       lastname schoolid schoolid   mascot
       -------- -------- --------   ------
   1      Adams       50       50  Jaguars
@@ -59,7 +61,8 @@ SELECT * FROM Roster CROSS JOIN TeamMascot;
  19 Eisenhower       77       52   Lakers
  20 Eisenhower       77       53 Mustangs
 (20 rows)
-SELECT * FROM Roster FULL JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster FULL JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
      lastname schoolid schoolid   mascot
      -------- -------- --------   ------
  1                           53 Mustangs
@@ -69,7 +72,8 @@ SELECT * FROM Roster FULL JOIN TeamMascot ON Roster.SchoolID = TeamMascot.School
  5      Davis       51       51  Knights
  6 Eisenhower       77                  
 (6 rows)
-SELECT * FROM Roster LEFT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster LEFT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
      lastname schoolid schoolid  mascot
      -------- -------- --------  ------
  1      Adams       50       50 Jaguars
@@ -78,7 +82,8 @@ SELECT * FROM Roster LEFT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.School
  4      Davis       51       51 Knights
  5 Eisenhower       77                 
 (5 rows)
-SELECT * FROM Roster RIGHT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
+SELECT LastName, Roster.SchoolID, TeamMascot.SchoolID, TeamMascot.Mascot
+    FROM Roster RIGHT JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID;
    lastname schoolid schoolid   mascot
    -------- -------- --------   ------
  1                         53 Mustangs

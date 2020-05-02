@@ -15,7 +15,7 @@ INSERT INTO tbl1 VALUES
     (24, 25, 26),
     (27, 28, 29),
     (30, 31, 32);
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
     c1 c2 c3
     -- -- --
   1  0  1  2
@@ -31,7 +31,7 @@ SELECT * FROM tbl1;
  11  9 10 11
 (11 rows)
 DELETE FROM tbl1 WHERE c1 < 6;
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
    c1 c2 c3
    -- -- --
  1 12 13 14
@@ -45,7 +45,7 @@ SELECT * FROM tbl1;
  9  9 10 11
 (9 rows)
 DELETE FROM tbl1 WHERE c2 = 16;
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
    c1 c2 c3
    -- -- --
  1 12 13 14
@@ -58,7 +58,7 @@ SELECT * FROM tbl1;
  8  9 10 11
 (8 rows)
 DELETE FROM tbl1;
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
   c1 c2 c3
   -- -- --
 (no rows)

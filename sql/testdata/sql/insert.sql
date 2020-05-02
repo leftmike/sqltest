@@ -20,7 +20,7 @@ INSERT INTO tbl1 (c1, c2) VALUES ('DEF', 789);
 
 INSERT INTO tbl1 (c2, c1) VALUES (123, 'GHI');
 
-SELECT * FROM tbl1;
+SELECT c1, c2 FROM tbl1;
 
 DROP TABLE IF EXISTS tbl2;
 
@@ -30,7 +30,7 @@ INSERT INTO tbl2 (c2) VALUES (456);
 
 INSERT INTO tbl2 (c1) VALUES ('def');
 
-SELECT * FROM tbl2;
+SELECT c1, c2 FROM tbl2;
 
 DROP TABLE IF EXISTS tbl3;
 
@@ -44,4 +44,4 @@ INSERT INTO tbl3 (c4, c2, c3, c1) VALUES
     (50, 60, 'eeeee', 'ffffff'),
     (60, 70, 'ffffff', 'ggggggg');
 
-SELECT * from tbl3;
+SELECT c1, c2, c3, c4 from tbl3;

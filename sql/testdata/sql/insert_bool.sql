@@ -11,7 +11,7 @@ CREATE TABLE tbl1 (c1 int not null, c2 bool not null);
 
 INSERT INTO tbl1 VALUES (456, true);
 
-SELECT * FROM tbl1;
+SELECT c1, c2 FROM tbl1;
 
 {{Fail .Test}}
 INSERT INTO tbl1 (c1) VALUES (789);
@@ -22,7 +22,7 @@ CREATE TABLE tbl2 (c1 bool default true, c2 int default 123);
 
 INSERT INTO tbl2 (c2) VALUES (456);
 
-SELECT * FROM tbl2;
+SELECT c1, c2 FROM tbl2;
 
 DROP TABLE IF EXISTS tbl3;
 
@@ -46,7 +46,7 @@ INSERT INTO tbl3 VALUES
     ('off'),
     ('0');
 
-SELECT * from tbl3;
+SELECT c1 from tbl3;
 
 DROP TABLE IF EXISTS tbl4;
 
@@ -104,4 +104,4 @@ INSERT INTO tbl4 VALUES
 INSERT INTO tbl4 VALUES
     (1 = 'abc');
 
-SELECT * FROM tbl4;
+SELECT c1 FROM tbl4;

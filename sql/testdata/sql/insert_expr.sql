@@ -11,11 +11,11 @@ INSERT INTO tbl1 VALUES
     (12 * 6 + 3 * 2, 12 * 4 + 3, 12 + 4 * 3),
     (12 * (6 + 3), (12 + 4) * 3, 8 / 17);
 
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
 
 INSERT INTO tbl1 (c1, c3) VALUES (1, 2), (3, 4), (5, 6), (7, 8);
 
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
 
 DROP TABLE IF EXISTS tbl2;
 
@@ -35,4 +35,4 @@ INSERT INTO tbl2 VALUES
     (abs(123)),
     (abs(-123));
 
-SELECT * FROM tbl2;
+SELECT c1 FROM tbl2;

@@ -4,7 +4,7 @@
 
 DROP TABLE IF EXISTS tbl1;
 
-CREATE TABLE tbl1 (c1 int, c2 int, c3 int);
+CREATE TABLE tbl1 (c1 int primary key, c2 int, c3 int);
 
 INSERT INTO tbl1 VALUES
     (0, 1, 2),

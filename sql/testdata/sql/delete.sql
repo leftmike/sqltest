@@ -19,16 +19,16 @@ INSERT INTO tbl1 VALUES
     (27, 28, 29),
     (30, 31, 32);
 
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
 
 DELETE FROM tbl1 WHERE c1 < 6;
 
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
 
 DELETE FROM tbl1 WHERE c2 = 16;
 
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;
 
 DELETE FROM tbl1;
 
-SELECT * FROM tbl1;
+SELECT c1, c2, c3 FROM tbl1;

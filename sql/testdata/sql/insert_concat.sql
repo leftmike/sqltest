@@ -19,4 +19,4 @@ INSERT INTO tbl1 VALUES
     ('abc' || true),
     (false || 'abc');
 
-SELECT * FROM tbl1;
+SELECT c1 FROM tbl1;
