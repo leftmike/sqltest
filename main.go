@@ -4,9 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/leftmike/sqltest/pkg/awsrds"
-	"github.com/leftmike/sqltest/pkg/gosql"
-	"github.com/leftmike/sqltest/pkg/sqltest"
+	"github.com/leftmike/sqltest/sqltestdb"
 )
 
 var (
@@ -20,7 +18,7 @@ type report struct {
 func (r report) Report(test string, err error) error {
 	if err == nil {
 		log.Printf("%s: %s: passed\n", r.driver, test)
-	} else if err == sqltest.Skipped {
+	} else if err == sqltestdb.Skipped {
 		log.Printf("%s: %s: skipped\n", r.driver, test)
 	} else {
 		log.Printf("%s: %s: failed: %s\n", r.driver, test, err)
@@ -33,13 +31,13 @@ func main() {
 
 	for _, arg := range flag.Args() {
 		log.Printf("testing %s\n", arg)
-		d, ok := gosql.Drivers[arg]
+		d, ok := Drivers[arg]
 		if !ok {
 			log.Printf("invalid driver: %s\n", arg)
 			continue
 		}
 		if *d.Source == "" && *useAWS {
-			s, err := awsrds.EnsurePostgresRDS("sqltest-postgresql")
+			s, err := EnsurePostgresRDS("sqltest-postgresql")
 			if err != nil {
 				log.Printf("error: %s: %s\n", d.Driver, err)
 				continue

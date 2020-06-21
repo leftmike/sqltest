@@ -1,4 +1,4 @@
-package awsrds
+package main
 
 import (
 	"fmt"

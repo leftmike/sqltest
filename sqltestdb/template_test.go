@@ -1,14 +1,14 @@
-package sqltest_test
+package sqltestdb_test
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/leftmike/sqltest/pkg/sqltest"
+	"github.com/leftmike/sqltest/sqltestdb"
 )
 
 type templateDialect struct {
-	sqltest.DefaultDialect
+	sqltestdb.DefaultDialect
 }
 
 func (_ templateDialect) DriverName() string {
@@ -18,7 +18,7 @@ func (_ templateDialect) DriverName() string {
 func TestTemplateExecute(t *testing.T) {
 	cases := []struct {
 		tmpl, result string
-		tctx, gctx   sqltest.TestContext
+		tctx, gctx   sqltestdb.TestContext
 		fail         bool
 	}{
 		{
@@ -32,32 +32,32 @@ func TestTemplateExecute(t *testing.T) {
 		{
 			tmpl:   "{{Fail .Test true}}",
 			result: "",
-			tctx:   sqltest.TestContext{Fail: true},
+			tctx:   sqltestdb.TestContext{Fail: true},
 		},
 		{
 			tmpl:   "{{Fail .Global true}}",
 			result: "",
-			gctx:   sqltest.TestContext{Fail: true},
+			gctx:   sqltestdb.TestContext{Fail: true},
 		},
 		{
 			tmpl:   `{{.Test.Statement}}{{Statement .Test "SELECT"}}{{.Test.Statement}}`,
 			result: "SELECT",
-			tctx:   sqltest.TestContext{Statement: "SELECT"},
+			tctx:   sqltestdb.TestContext{Statement: "SELECT"},
 		},
 		{
 			tmpl:   `{{eq Dialect "template" | Fail .Test}}`,
 			result: "",
-			tctx:   sqltest.TestContext{Fail: true},
+			tctx:   sqltestdb.TestContext{Fail: true},
 		},
 		{
 			tmpl:   "{{Fail .Test}}",
 			result: "",
-			tctx:   sqltest.TestContext{Fail: true},
+			tctx:   sqltestdb.TestContext{Fail: true},
 		},
 		{
 			tmpl:   "{{Sort .Test false}}",
 			result: "",
-			tctx:   sqltest.TestContext{NoSort: true},
+			tctx:   sqltestdb.TestContext{NoSort: true},
 		},
 		{
 			tmpl:   "{{BINARY}}",
@@ -70,7 +70,7 @@ func TestTemplateExecute(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		tmplCtx := sqltest.NewTemplateContext(templateDialect{})
+		tmplCtx := sqltestdb.NewTemplateContext(templateDialect{})
 		r, tctx, err := tmplCtx.Execute(c.tmpl)
 		if c.fail {
 			if err == nil {

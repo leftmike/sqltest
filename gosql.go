@@ -1,7 +1,4 @@
-/*
-Package gosql uses the database drivers for Go to drive sqltest.
-*/
-package gosql
+package main
 
 import (
 	"flag"
@@ -11,11 +8,13 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/leftmike/sqltest/pkg/sqltest"
+	"github.com/leftmike/sqltest/sqltestdb"
 )
 
+// Use the database drivers for Go to drive sqltest.
+
 type sqlite3Dialect struct {
-	sqltest.DefaultDialect
+	sqltestdb.DefaultDialect
 }
 
 func (_ sqlite3Dialect) DriverName() string {
@@ -46,7 +45,7 @@ func (_ postgresDialect) ColumnTypeArg(typ string, arg int) string {
 }
 
 type mysqlDialect struct {
-	sqltest.DefaultDialect
+	sqltestdb.DefaultDialect
 }
 
 func (_ mysqlDialect) DriverName() string {
@@ -64,7 +63,7 @@ var (
 
 type driver struct {
 	Driver  string
-	dialect sqltest.Dialect
+	dialect sqltestdb.Dialect
 	Source  *string
 }
 
@@ -74,15 +73,15 @@ var Drivers = map[string]driver{
 	"mysql":    {"mysql", mysqlDialect{}, mysqlSource},
 }
 
-func (d driver) RunTests(r sqltest.Reporter) error {
+func (d driver) RunTests(r sqltestdb.Reporter) error {
 	if *d.Source == "" {
 		return fmt.Errorf("no source for driver %s", d.Driver)
 	}
 
-	var run sqltest.DBRunner
+	var run sqltestdb.DBRunner
 	err := run.Connect(d.Driver, *d.Source)
 	if err != nil {
 		return err
 	}
-	return sqltest.RunTests(*testData, &run, r, d.dialect, *update)
+	return sqltestdb.RunTests(*testData, &run, r, d.dialect, *update)
 }

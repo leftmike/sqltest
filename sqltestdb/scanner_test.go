@@ -1,4 +1,4 @@
-package sqltest_test
+package sqltestdb_test
 
 import (
 	"fmt"
@@ -6,12 +6,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/leftmike/sqltest/pkg/sqltest"
+	"github.com/leftmike/sqltest/sqltestdb"
 )
 
 func TestScanner(t *testing.T) {
 	for i, c := range cases {
-		scanner := sqltest.NewScanner(strings.NewReader(c.s))
+		scanner := sqltestdb.NewScanner(strings.NewReader(c.s))
 		scanner.Filename = fmt.Sprintf("cases[%d]", i)
 		for i := 0; ; i++ {
 			tst, err := scanner.Scan()
@@ -37,13 +37,13 @@ func TestScanner(t *testing.T) {
 
 var cases = []struct {
 	s     string
-	tests []sqltest.Test
+	tests []sqltestdb.Test
 }{
 	{
 		s: `-- a comment
 SELECT * FROM tbl;
 `,
-		tests: []sqltest.Test{
+		tests: []sqltestdb.Test{
 			{
 				Filename:   "cases[0]",
 				LineNumber: 1,
@@ -67,7 +67,7 @@ INSERT INTO tbl VALUES
 DELETE FROM tbl
 WHERE c2 = 2
 `,
-		tests: []sqltest.Test{
+		tests: []sqltestdb.Test{
 			{
 				Filename:   "cases[1]",
 				LineNumber: 1,

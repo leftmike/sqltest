@@ -1,18 +1,18 @@
-package sqltest_test
+package sqltestdb_test
 
 import (
 	"testing"
 
-	"github.com/leftmike/sqltest/pkg/sqltest"
+	"github.com/leftmike/sqltest/sqltestdb"
 )
 
 type testRunner struct{}
 
-func (run testRunner) RunExec(tst *sqltest.Test) error {
+func (run testRunner) RunExec(tst *sqltestdb.Test) error {
 	return nil
 }
 
-func (run testRunner) RunQuery(tst *sqltest.Test) ([]string, [][]string, error) {
+func (run testRunner) RunQuery(tst *sqltestdb.Test) ([]string, [][]string, error) {
 	return []string{"col1", "col2", "col3"},
 		[][]string{{"1", "2", "3"}, {"4", "5", "6"}}, nil
 }
@@ -30,7 +30,7 @@ func (tr *testReporter) Report(test string, err error) error {
 }
 
 type testDialect struct {
-	sqltest.DefaultDialect
+	sqltestdb.DefaultDialect
 }
 
 func (_ testDialect) DriverName() string {
@@ -39,7 +39,7 @@ func (_ testDialect) DriverName() string {
 
 func TestRunTests(t *testing.T) {
 	var tr testReporter
-	err := sqltest.RunTests("testdata", testRunner{}, &tr, testDialect{}, false)
+	err := sqltestdb.RunTests("testdata", testRunner{}, &tr, testDialect{}, false)
 	if err != nil {
 		t.Errorf("RunTests() failed with %s", err)
 	}
