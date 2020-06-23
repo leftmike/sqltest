@@ -55,6 +55,7 @@ func (_ mysqlDialect) DriverName() string {
 var (
 	update   = flag.Bool("update", false, "update expected to output")
 	testData = flag.String("testdata", "testdata", "directory of testdata")
+	psql     = flag.Bool("psql", false, "output in psql format")
 
 	sqlite3Source  = flag.String("sqlite3", ":memory:", "data source to use for sqlite3")
 	postgresSource = flag.String("postgres", "", "data source to use for postgres")
@@ -83,5 +84,5 @@ func (d driver) RunTests(r sqltestdb.Reporter) error {
 	if err != nil {
 		return err
 	}
-	return sqltestdb.RunTests(*testData, &run, r, d.dialect, *update)
+	return sqltestdb.RunTests(*testData, &run, r, d.dialect, *update, *psql)
 }

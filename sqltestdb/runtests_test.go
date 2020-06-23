@@ -8,8 +8,8 @@ import (
 
 type testRunner struct{}
 
-func (run testRunner) RunExec(tst *sqltestdb.Test) error {
-	return nil
+func (run testRunner) RunExec(tst *sqltestdb.Test) (int64, error) {
+	return -1, nil
 }
 
 func (run testRunner) RunQuery(tst *sqltestdb.Test) ([]string, [][]string, error) {
@@ -39,7 +39,7 @@ func (_ testDialect) DriverName() string {
 
 func TestRunTests(t *testing.T) {
 	var tr testReporter
-	err := sqltestdb.RunTests("testdata", testRunner{}, &tr, testDialect{}, false)
+	err := sqltestdb.RunTests("testdata", testRunner{}, &tr, testDialect{}, false, false)
 	if err != nil {
 		t.Errorf("RunTests() failed with %s", err)
 	}

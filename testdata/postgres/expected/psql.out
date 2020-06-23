@@ -1,0 +1,8 @@
+DROP TABLE
+CREATE TABLE
+INSERT 0 3
+c1|integer_column|c3
+one|1|
+two|2|two two two two two two two
+two hundred|200|two hundred
+(3 rows)

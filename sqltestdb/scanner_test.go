@@ -66,6 +66,8 @@ INSERT INTO tbl VALUES
 
 DELETE FROM tbl
 WHERE c2 = 2
+
+CREATE TABLE tbl1 (c1 int, c2 int)
 `,
 		tests: []sqltestdb.Test{
 			{
@@ -92,6 +94,12 @@ INSERT INTO tbl VALUES
 				Test: `DELETE FROM tbl
 WHERE c2 = 2`,
 				Statement: "DELETE",
+			},
+			{
+				Filename:   "cases[1]",
+				LineNumber: 14,
+				Test:       "CREATE TABLE tbl1 (c1 int, c2 int)",
+				Statement:  "CREATE TABLE",
 			},
 		},
 	},

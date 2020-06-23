@@ -10,9 +10,17 @@ type DBRunner struct {
 	db *sqlx.DB
 }
 
-func (run *DBRunner) RunExec(tst *Test) error {
-	_, err := run.db.Exec(tst.Test)
-	return err
+func (run *DBRunner) RunExec(tst *Test) (int64, error) {
+	result, err := run.db.Exec(tst.Test)
+	if err == nil && result != nil && (tst.Statement == "INSERT" || tst.Statement == "UPDATE" ||
+		tst.Statement == "DELETE" || tst.Statement == "COPY") {
+
+		n, err := result.RowsAffected()
+		if err == nil {
+			return n, nil
+		}
+	}
+	return -1, err
 }
 
 func (run *DBRunner) RunQuery(tst *Test) ([]string, [][]string, error) {

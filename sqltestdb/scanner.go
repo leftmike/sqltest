@@ -51,7 +51,10 @@ func (s *Scanner) err() error {
 	return nil
 }
 
-var stmtRegexp = regexp.MustCompile(`(?m)^[a-zA-Z]+`)
+var (
+	stmtRegexp    = regexp.MustCompile(`(?m)^[a-zA-Z]+`)
+	twoStmtRegexp = regexp.MustCompile(`(?m)^[a-zA-Z]+ +[a-zA-Z]+`)
+)
 
 func (s *Scanner) Scan() (*Test, error) {
 	var tst Test
@@ -94,7 +97,10 @@ func (s *Scanner) Scan() (*Test, error) {
 		}
 	}
 
-	tst.Statement = stmtRegexp.FindString(tst.Test)
+	tst.Statement = strings.ToUpper(stmtRegexp.FindString(tst.Test))
+	if tst.Statement == "ALTER" || tst.Statement == "CREATE" || tst.Statement == "DROP" {
+		tst.Statement = strings.ToUpper(twoStmtRegexp.FindString(tst.Test))
+	}
 
 	return &tst, nil
 }

@@ -19,7 +19,7 @@ var Skipped = fmt.Errorf("skipped")
 
 type Runner interface {
 	// RunExec is used to execute a single SQL statement which must not return rows.
-	RunExec(tst *Test) error
+	RunExec(tst *Test) (int64, error)
 	// RunQuery is used to execute a single SQL statement which returns a slice of column
 	// names and a slice of rows.
 	RunQuery(tst *Test) ([]string, [][]string, error)
@@ -56,7 +56,7 @@ func (_ DefaultDialect) ColumnTypeArg(typ string, arg int) string {
 // RunTests runs all of the tests in a directory: <dir>/sql/*.sql contains the tests and
 // <dir>/expected/*.out contains the expected output for each sql file. The output from each
 // sql file will get written to <dir>/output/*.out.
-func RunTests(dir string, run Runner, report Reporter, dialect Dialect, update bool) error {
+func RunTests(dir string, run Runner, report Reporter, dialect Dialect, update, psql bool) error {
 	files, err := filepath.Glob(filepath.Join(dir, "sql", "*.sql"))
 	if err != nil {
 		return fmt.Errorf("Glob(%q) failed with %s", filepath.Join(dir, "sql", "*.sql"), err)
@@ -67,7 +67,7 @@ func RunTests(dir string, run Runner, report Reporter, dialect Dialect, update b
 	}
 
 	for _, sqlname := range files {
-		err, ret := testFile(dir, sqlname, run, dialect, update)
+		err, ret := testFile(dir, sqlname, run, dialect, update, psql)
 		if err != nil {
 			return err
 		}
@@ -80,7 +80,7 @@ func RunTests(dir string, run Runner, report Reporter, dialect Dialect, update b
 	return nil
 }
 
-func testFile(dir, sqlname string, run Runner, dialect Dialect, update bool) (error, error) {
+func testFile(dir, sqlname string, run Runner, dialect Dialect, update, psql bool) (error, error) {
 	// Get filename without .sql
 	basename := filepath.Base(sqlname)
 	basename = basename[:strings.LastIndexByte(basename, '.')]
@@ -105,7 +105,10 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect, update bool) (er
 			break
 		}
 
-		fmt.Fprintln(&out, tst.Test)
+		if !psql {
+			fmt.Fprintln(&out, tst.Test)
+		}
+
 		var tctx TestContext
 		tst.Test, tctx, err = tmplCtx.Execute(tst.Test)
 		if err != nil {
@@ -116,9 +119,21 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect, update bool) (er
 		}
 
 		if strings.ToUpper(tst.Statement) == "SELECT" {
-			err = testQuery(tst, run, &out, &tctx)
+			err = testQuery(tst, run, &out, &tctx, psql)
 		} else {
-			err = run.RunExec(tst)
+			var n int64
+			n, err = run.RunExec(tst)
+			if psql && tst.Statement != "" {
+				if n >= 0 {
+					if tst.Statement == "INSERT" {
+						fmt.Fprintf(&out, "INSERT 0 %d\n", n)
+					} else {
+						fmt.Fprintf(&out, "%s %d\n", tst.Statement, n)
+					}
+				} else {
+					fmt.Fprintln(&out, tst.Statement)
+				}
+			}
 		}
 		if err != nil && !tctx.Fail {
 			return nil, fmt.Errorf("%s:%d: %s", tst.Filename, tst.LineNumber, err)
@@ -200,7 +215,7 @@ func (rr resultRows) Less(i, j int) bool {
 	return false
 }
 
-func testQuery(tst *Test, run Runner, out io.Writer, tctx *TestContext) error {
+func testQuery(tst *Test, run Runner, out io.Writer, tctx *TestContext, psql bool) error {
 	cols, rows, err := run.RunQuery(tst)
 	if err != nil {
 		return err
@@ -209,6 +224,44 @@ func testQuery(tst *Test, run Runner, out io.Writer, tctx *TestContext) error {
 		sort.Sort(resultRows(rows))
 	}
 
+	if psql {
+		// Unaligned output like psql -A
+		psqlOutput(out, cols, rows)
+	} else {
+		tabwriterOutput(out, cols, rows)
+	}
+	switch len(rows) {
+	case 0:
+		fmt.Fprint(out, "(no rows)\n")
+	case 1:
+		fmt.Fprint(out, "(1 row)\n")
+	default:
+		fmt.Fprintf(out, "(%d rows)\n", len(rows))
+	}
+	return nil
+}
+
+func psqlOutput(out io.Writer, cols []string, rows [][]string) {
+	for cdx, col := range cols {
+		if cdx > 0 {
+			fmt.Fprint(out, "|")
+		}
+		fmt.Fprint(out, col)
+	}
+	fmt.Fprintln(out)
+
+	for _, row := range rows {
+		for vdx, val := range row {
+			if vdx > 0 {
+				fmt.Fprint(out, "|")
+			}
+			fmt.Fprint(out, val)
+		}
+		fmt.Fprintln(out)
+	}
+}
+
+func tabwriterOutput(out io.Writer, cols []string, rows [][]string) {
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', tabwriter.AlignRight)
 
 	fmt.Fprint(w, "\t")
@@ -232,13 +285,4 @@ func testQuery(tst *Test, run Runner, out io.Writer, tctx *TestContext) error {
 		i += 1
 	}
 	w.Flush()
-	switch len(rows) {
-	case 0:
-		fmt.Fprint(out, "(no rows)\n")
-	case 1:
-		fmt.Fprint(out, "(1 row)\n")
-	default:
-		fmt.Fprintf(out, "(%d rows)\n", len(rows))
-	}
-	return nil
 }
