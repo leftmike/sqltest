@@ -1,7 +1,6 @@
 --
 -- Test UPDATE failing with primary key
 --
--- {{if eq Dialect "maho-memrows"}}{{Skip}}{{end}}
 
 DROP TABLE IF EXISTS tbl1;
 
