@@ -22,7 +22,16 @@ SELECT * FROM tbl1;
 
 UPDATE tbl1 SET c2 = 11 WHERE c1 = 0;
 
--- Fail .Test
--- UPDATE tbl1 SET c2 = 0 WHERE c1 = 0;
+{{Fail .Test}}
+UPDATE tbl1 SET c2 = 0 WHERE c1 = 0;
+
+{{Fail .Test}}
+UPDATE tbl1 SET c1 = -1 WHERE c3 = 3;
+
+{{Fail .Test}}
+UPDATE tbl1 SET c2 = 0 WHERE c1 = 3;
+
+{{Fail .Test}}
+UPDATE tbl1 SET c3 = c1;
 
 SELECT * FROM tbl1;
