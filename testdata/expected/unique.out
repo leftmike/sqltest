@@ -121,3 +121,49 @@ SELECT * FROM tbl1;
  6 50 60  1
  7 60 70  1
 (7 rows)
+DELETE FROM tbl1 WHERE c1 = 40;
+SELECT * FROM tbl1;
+   c1 c2 c3
+   -- -- --
+ 1  0 12  1
+ 2 10 21  1
+ 3 20 31  1
+ 4 30 41  1
+ 5 50 60  1
+ 6 60 70  1
+(6 rows)
+UPDATE tbl1 SET c2 = 50 WHERE c1 = 50;
+SELECT * FROM tbl1;
+   c1 c2 c3
+   -- -- --
+ 1  0 12  1
+ 2 10 21  1
+ 3 20 31  1
+ 4 30 41  1
+ 5 50 50  1
+ 6 60 70  1
+(6 rows)
+DELETE FROM tbl1 WHERE c1 >= 50;
+SELECT * FROM tbl1;
+   c1 c2 c3
+   -- -- --
+ 1  0 12  1
+ 2 10 21  1
+ 3 20 31  1
+ 4 30 41  1
+(4 rows)
+INSERT INTO tbl1 VALUES
+    (40, 50, 0),
+    (50, 60, 0),
+    (60, 70, 0);
+SELECT * FROM tbl1;
+   c1 c2 c3
+   -- -- --
+ 1  0 12  1
+ 2 10 21  1
+ 3 20 31  1
+ 4 30 41  1
+ 5 40 50  0
+ 6 50 60  0
+ 7 60 70  0
+(7 rows)

@@ -69,3 +69,23 @@ INSERT INTO tbl1 VALUES
 UPDATE tbl1 SET c3 = 1;
 
 SELECT * FROM tbl1;
+
+DELETE FROM tbl1 WHERE c1 = 40;
+
+SELECT * FROM tbl1;
+
+UPDATE tbl1 SET c2 = 50 WHERE c1 = 50;
+
+SELECT * FROM tbl1;
+
+DELETE FROM tbl1 WHERE c1 >= 50;
+
+SELECT * FROM tbl1;
+
+INSERT INTO tbl1 VALUES
+    (40, 50, 0),
+    (50, 60, 0),
+    (60, 70, 0);
+
+SELECT * FROM tbl1;
+
