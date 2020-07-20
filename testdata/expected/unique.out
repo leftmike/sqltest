@@ -152,6 +152,11 @@ SELECT * FROM tbl1;
  3 20 31  1
  4 30 41  1
 (4 rows)
+{{Fail .Test}}
+INSERT INTO tbl1 VALUES
+    (NULL, 80, 0);
+{{Fail .Test}}
+UPDATE tbl1 SET c1 = NULL WHERE c1 = 20;
 INSERT INTO tbl1 VALUES
     (40, 50, 0),
     (50, 60, 0),

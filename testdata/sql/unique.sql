@@ -82,10 +82,16 @@ DELETE FROM tbl1 WHERE c1 >= 50;
 
 SELECT * FROM tbl1;
 
+{{Fail .Test}}
+INSERT INTO tbl1 VALUES
+    (NULL, 80, 0);
+
+{{Fail .Test}}
+UPDATE tbl1 SET c1 = NULL WHERE c1 = 20;
+
 INSERT INTO tbl1 VALUES
     (40, 50, 0),
     (50, 60, 0),
     (60, 70, 0);
 
 SELECT * FROM tbl1;
-
