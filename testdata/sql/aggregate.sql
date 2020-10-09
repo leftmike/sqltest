@@ -22,10 +22,22 @@ INSERT INTO tbl1 VALUES
 
 SELECT count(*) AS count FROM tbl1;
 
+SELECT count(*) AS count FROM tbl1 WHERE c1 = 5;
+
 SELECT count(c1) FROM tbl1;
+
+SELECT count(c1) FROM tbl1 WHERE c1 = 5;
 
 SELECT sum(c1) FROM tbl1 GROUP BY c1;
 
+SELECT sum(c1) FROM tbl1 WHERE c1 = 5;
+
+SELECT sum(c1) FROM tbl1 WHERE c1 = 5 GROUP BY c1;
+
 SELECT max(c2), min(c3) FROM tbl1;
 
+SELECT max(c2), min(c3) FROM tbl1 WHERE c1 = 5;
+
 SELECT max(c2), min(c3) FROM tbl1 GROUP BY c1;
+
+SELECT max(c2), min(c3) FROM tbl1 WHERE c1 = 5 GROUP BY c1;

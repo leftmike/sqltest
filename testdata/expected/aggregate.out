@@ -21,10 +21,20 @@ SELECT count(*) AS count FROM tbl1;
    -----
  1    11
 (1 row)
+SELECT count(*) AS count FROM tbl1 WHERE c1 = 5;
+   count
+   -----
+ 1     0
+(1 row)
 SELECT count(c1) FROM tbl1;
    count
    -----
  1    11
+(1 row)
+SELECT count(c1) FROM tbl1 WHERE c1 = 5;
+   count
+   -----
+ 1     0
 (1 row)
 SELECT sum(c1) FROM tbl1 GROUP BY c1;
    sum
@@ -35,10 +45,24 @@ SELECT sum(c1) FROM tbl1 GROUP BY c1;
  4   4
  5   8
 (5 rows)
+SELECT sum(c1) FROM tbl1 WHERE c1 = 5;
+   sum
+   ---
+ 1    
+(1 row)
+SELECT sum(c1) FROM tbl1 WHERE c1 = 5 GROUP BY c1;
+  sum
+  ---
+(no rows)
 SELECT max(c2), min(c3) FROM tbl1;
    max min
    --- ---
  1  31   2
+(1 row)
+SELECT max(c2), min(c3) FROM tbl1 WHERE c1 = 5;
+   max min
+   --- ---
+ 1        
 (1 row)
 SELECT max(c2), min(c3) FROM tbl1 GROUP BY c1;
    max min
@@ -49,3 +73,7 @@ SELECT max(c2), min(c3) FROM tbl1 GROUP BY c1;
  4  31  32
  5   7   2
 (5 rows)
+SELECT max(c2), min(c3) FROM tbl1 WHERE c1 = 5 GROUP BY c1;
+  max min
+  --- ---
+(no rows)
