@@ -118,20 +118,21 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect, update, psql boo
 			return nil, Skipped
 		}
 
-		if strings.ToUpper(tst.Statement) == "SELECT" {
+		stmt := strings.ToUpper(tst.Statement)
+		if stmt == "SELECT" || stmt == "SHOW" {
 			err = testQuery(tst, run, &out, &tctx, psql)
 		} else {
 			var n int64
 			n, err = run.RunExec(tst)
-			if psql && tst.Statement != "" {
+			if psql && stmt != "" {
 				if n >= 0 {
-					if tst.Statement == "INSERT" {
+					if stmt == "INSERT" {
 						fmt.Fprintf(&out, "INSERT 0 %d\n", n)
 					} else {
-						fmt.Fprintf(&out, "%s %d\n", tst.Statement, n)
+						fmt.Fprintf(&out, "%s %d\n", stmt, n)
 					}
 				} else {
-					fmt.Fprintln(&out, tst.Statement)
+					fmt.Fprintln(&out, stmt)
 				}
 			}
 		}
