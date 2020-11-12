@@ -21,3 +21,55 @@ SELECT c1, c2 FROM tbl1;
  2 abc 456
  3 def 123
 (3 rows)
+INSERT INTO tbl1 VALUES
+    ('1st', DEFAULT),
+    (NULL, 789),
+    (DEFAULT, NULL);
+SELECT c1, c2 FROM tbl1;
+    c1  c2
+    --  --
+ 1     789
+ 2 1st 123
+ 3 abc    
+ 4 abc 123
+ 5 abc 456
+ 6 def 123
+(6 rows)
+DROP TABLE IF EXISTS tbl2;
+CREATE TABLE tbl2 (
+    c1 int default 1,
+    c2 int default 2 not null,
+    c3 int not null);
+INSERT INTO tbl2 VALUES
+    (10, 20, 30),
+    (20, 30, 40),
+    (NULL, DEFAULT, 50),
+    (DEFAULT, 40, 60);
+SELECT c1, c2, c3 FROM tbl2;
+   c1 c2 c3
+   -- -- --
+ 1     2 50
+ 2  1 40 60
+ 3 10 20 30
+ 4 20 30 40
+(4 rows)
+{{Fail .Test}}
+INSERT INTO tbl2 VALUES
+    (DEFAULT, NULL, 10);
+{{Fail .Test}}
+INSERT INTO tbl2 VALUES
+    (NULL, DEFAULT, NULL);
+{{Fail .Test}}
+INSERT INTO tbl2 (c1) VALUES (10);
+{{Fail .Test}}
+INSERT INTO tbl2 VALUES (10, 20, DEFAULT);
+INSERT INTO tbl2 (c3) VALUES (70);
+SELECT c1, c2, c3 FROM tbl2;
+   c1 c2 c3
+   -- -- --
+ 1     2 50
+ 2  1  2 70
+ 3  1 40 60
+ 4 10 20 30
+ 5 20 30 40
+(5 rows)
