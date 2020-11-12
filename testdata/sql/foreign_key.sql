@@ -16,7 +16,7 @@ CREATE TABLE tbl1 (
 CREATE TABLE tbl2 (
     c4 int PRIMARY KEY,
     c5 int,
-    c6 int REFERENCES tbl1
+    c6 int REFERENCES tbl1 ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
 INSERT INTO tbl1 VALUES
@@ -59,6 +59,27 @@ INSERT INTO tbl2 VALUES
 SELECT * FROM tbl1;
 
 SELECT * FROM tbl2;
+
+{{Fail .Test}}
+DELETE FROM tbl1 WHERE c2 = 6;
+
+{{Fail .Test}}
+UPDATE tbl1 SET c2 = 44 WHERE c2 = 4;
+
+INSERT INTO tbl1 VALUES
+    (70, 7, 700),
+    (80, 8, 800),
+    (90, 9, 900);
+
+SELECT * FROM tbl1;
+
+{{Fail .Test}}
+DELETE FROM tbl1 WHERE c2 > 3;
+
+{{Fail .Test}}
+UPDATE tbl1 SET c2 = c2 * 10 WHERE c2 > 5;
+
+SELECT * FROM tbl1;
 
 -- Drop table with foreign key reference first.
 DROP TABLE IF EXISTS tbl2;
