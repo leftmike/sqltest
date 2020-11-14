@@ -13,8 +13,7 @@ CREATE TABLE tbl1 (
 CREATE TABLE tbl2 (
     c4 int PRIMARY KEY,
     c5 int,
-    c6 int REFERENCES tbl1 ON DELETE CASCADE
-    -- c6 int REFERENCES tbl1 ON DELETE CASCADE ON UPDATE CASCADE
+    c6 int REFERENCES tbl1 ON DELETE CASCADE ON UPDATE CASCADE
 );
 INSERT INTO tbl1 VALUES
     (1, 10, 100),
@@ -31,7 +30,9 @@ INSERT INTO tbl2 VALUES
     (30, 300, 3),
     (40, 400, 1),
     (50, 500, 2),
-    (60, 600, 3);
+    (60, 600, 3),
+    (70, 700, 4),
+    (80, 800, 5);
 SELECT * FROM tbl1;
    c1 c2  c3
    -- --  --
@@ -53,7 +54,9 @@ SELECT * FROM tbl2;
  4 40 400  1
  5 50 500  2
  6 60 600  3
-(6 rows)
+ 7 70 700  4
+ 8 80 800  5
+(8 rows)
 DELETE FROM tbl1 WHERE c1 = 7;
 DELETE FROM tbl1 WHERE c1 = 2;
 SELECT * FROM tbl1;
@@ -73,38 +76,66 @@ SELECT * FROM tbl2;
  2 30 300  3
  3 40 400  1
  4 60 600  3
-(4 rows)
+ 5 70 700  4
+ 6 80 800  5
+(6 rows)
+UPDATE tbl1 SET c1 = 2 WHERE c1 = 1;
+UPDATE tbl1 SET c1 = 9 WHERE c1 = 5;
+UPDATE tbl1 SET c2 = 400 WHERE c1 = 4;
+SELECT * FROM tbl1;
+   c1  c2  c3
+   --  --  --
+ 1  2  10 100
+ 2  3  30 300
+ 3  4 400 400
+ 4  6  60 600
+ 5  8  80 800
+ 6  9  50 500
+(6 rows)
+SELECT * FROM tbl2;
+   c4  c5 c6
+   --  -- --
+ 1 10 100  2
+ 2 30 300  3
+ 3 40 400  2
+ 4 60 600  3
+ 5 70 700  4
+ 6 80 800  9
+(6 rows)
 -- Drop table with foreign key reference first.
 DROP TABLE IF EXISTS tbl2;
 DROP TABLE IF EXISTS tbl1;
 CREATE TABLE tbl1 (
     c1 int PRIMARY KEY,
-    c2 int
+    c2 int,
+    x1 int DEFAULT 0
 );
 CREATE TABLE tbl2 (
     c3 int PRIMARY KEY,
-    c4 int REFERENCES tbl1 ON DELETE CASCADE
+    c4 int REFERENCES tbl1 ON DELETE CASCADE ON UPDATE CASCADE,
+    x2 int DEFAULT 0
 );
 DROP TABLE IF EXISTS tbl3;
 CREATE TABLE tbl3 (
     c5 int PRIMARY KEY,
-    c6 int REFERENCES tbl2 ON DELETE RESTRICT
+    c6 int REFERENCES tbl2 ON DELETE RESTRICT ON UPDATE RESTRICT,
+    x3 int DEFAULT 0
 );
-INSERT INTO tbl1 VALUES
+INSERT INTO tbl1 (c1, c2) VALUES
     (1, 10),
     (2, 20),
     (3, 30),
     (4, 40),
     (5, 50),
     (6, 60);
-INSERT INTO tbl2 VALUES
+INSERT INTO tbl2 (c3, c4) VALUES
     (10, 1),
     (11, 1),
     (12, 1),
     (20, 2),
     (30, 3),
     (31, 3);
-INSERT INTO tbl3 VALUES
+INSERT INTO tbl3 (c5, c6) VALUES
     (100, 11),
     (101, 11),
     (200, 20),
@@ -112,34 +143,34 @@ INSERT INTO tbl3 VALUES
     (202, 20),
     (300, 31);
 SELECT * FROM tbl1;
-   c1 c2
-   -- --
- 1  1 10
- 2  2 20
- 3  3 30
- 4  4 40
- 5  5 50
- 6  6 60
+   c1 c2 x1
+   -- -- --
+ 1  1 10  0
+ 2  2 20  0
+ 3  3 30  0
+ 4  4 40  0
+ 5  5 50  0
+ 6  6 60  0
 (6 rows)
 SELECT * FROM tbl2;
-   c3 c4
-   -- --
- 1 10  1
- 2 11  1
- 3 12  1
- 4 20  2
- 5 30  3
- 6 31  3
+   c3 c4 x2
+   -- -- --
+ 1 10  1  0
+ 2 11  1  0
+ 3 12  1  0
+ 4 20  2  0
+ 5 30  3  0
+ 6 31  3  0
 (6 rows)
 SELECT * FROM tbl3;
-    c5 c6
-    -- --
- 1 100 11
- 2 101 11
- 3 200 20
- 4 201 20
- 5 202 20
- 6 300 31
+    c5 c6 x3
+    -- -- --
+ 1 100 11  0
+ 2 101 11  0
+ 3 200 20  0
+ 4 201 20  0
+ 5 202 20  0
+ 6 300 31  0
 (6 rows)
 DELETE FROM tbl1 WHERE c1 = 10;
 DELETE FROM tbl2 WHERE c3 = 30;
@@ -148,33 +179,67 @@ DELETE FROM tbl2 WHERE c3 = 20;
 {{Fail .Test}}
 DELETE FROM tbl1 WHERE c1 = 2;
 SELECT * FROM tbl1;
-   c1 c2
-   -- --
- 1  1 10
- 2  2 20
- 3  3 30
- 4  4 40
- 5  5 50
- 6  6 60
+   c1 c2 x1
+   -- -- --
+ 1  1 10  0
+ 2  2 20  0
+ 3  3 30  0
+ 4  4 40  0
+ 5  5 50  0
+ 6  6 60  0
 (6 rows)
 SELECT * FROM tbl2;
-   c3 c4
-   -- --
- 1 10  1
- 2 11  1
- 3 12  1
- 4 20  2
- 5 31  3
+   c3 c4 x2
+   -- -- --
+ 1 10  1  0
+ 2 11  1  0
+ 3 12  1  0
+ 4 20  2  0
+ 5 31  3  0
 (5 rows)
 SELECT * FROM tbl3;
-    c5 c6
-    -- --
- 1 100 11
- 2 101 11
- 3 200 20
- 4 201 20
- 5 202 20
- 6 300 31
+    c5 c6 x3
+    -- -- --
+ 1 100 11  0
+ 2 101 11  0
+ 3 200 20  0
+ 4 201 20  0
+ 5 202 20  0
+ 6 300 31  0
+(6 rows)
+{{Fail .Test}}
+UPDATE tbl2 SET c3 = 200 WHERE c3 = 20;
+UPDATE tbl1 SET c1 = 100 WHERE c1 = 1;
+UPDATE tbl1 SET x1 = 100 WHERE c1 = 100;
+UPDATE tbl2 SET x2 = 200 WHERE c3 = 20;
+SELECT * FROM tbl1;
+    c1 c2  x1
+    -- --  --
+ 1 100 10 100
+ 2   2 20   0
+ 3   3 30   0
+ 4   4 40   0
+ 5   5 50   0
+ 6   6 60   0
+(6 rows)
+SELECT * FROM tbl2;
+   c3  c4  x2
+   --  --  --
+ 1 10 100   0
+ 2 11 100   0
+ 3 12 100   0
+ 4 20   2 200
+ 5 31   3   0
+(5 rows)
+SELECT * FROM tbl3;
+    c5 c6 x3
+    -- -- --
+ 1 100 11  0
+ 2 101 11  0
+ 3 200 20  0
+ 4 201 20  0
+ 5 202 20  0
+ 6 300 31  0
 (6 rows)
 -- Drop table with foreign key references first.
 DROP TABLE IF EXISTS tbl3;
