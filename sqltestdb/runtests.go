@@ -119,7 +119,7 @@ func testFile(dir, sqlname string, run Runner, dialect Dialect, update, psql boo
 		}
 
 		stmt := strings.ToUpper(tst.Statement)
-		if stmt == "SELECT" || stmt == "SHOW" || stmt == "EXPLAIN" {
+		if stmt == "SELECT" || stmt == "SHOW" || stmt == "EXPLAIN" || stmt == "VALUES" {
 			err = testQuery(tst, run, &out, &tctx, psql)
 		} else {
 			var n int64
