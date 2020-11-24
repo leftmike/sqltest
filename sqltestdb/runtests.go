@@ -235,7 +235,16 @@ func testQuery(tst *Test, run Runner, out io.Writer, tctx *TestContext, psql boo
 		// Unaligned output like psql -A
 		psqlOutput(out, qr.Columns, qr.Rows)
 	} else {
-		tabwriterOutput(out, qr.Columns, qr.Rows)
+		var cols []string
+		if tctx.Types {
+			for cdx := range qr.Columns {
+				cols = append(cols, fmt.Sprintf("%s:%s", qr.Columns[cdx], qr.TypeNames[cdx]))
+			}
+		} else {
+			cols = qr.Columns
+		}
+
+		tabwriterOutput(out, cols, qr.Rows)
 	}
 	switch len(qr.Rows) {
 	case 0:

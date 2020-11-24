@@ -15,6 +15,7 @@ type TestContext struct {
 	Statement string
 	Fail      bool
 	NoSort    bool
+	Types     bool
 }
 
 func failFunc(ctx *TestContext, fail ...bool) string {
@@ -36,12 +37,18 @@ func sortFunc(ctx *TestContext, sort bool) string {
 	return ""
 }
 
+func typesFunc(ctx *TestContext, types bool) string {
+	ctx.Types = types
+	return ""
+}
+
 func NewTemplateContext(dialect Dialect) *TemplateContext {
 	tmplCtx := &TemplateContext{
 		funcs: template.FuncMap{
 			"Fail":      failFunc,
 			"Statement": statementFunc,
 			"Sort":      sortFunc,
+			"Types":     typesFunc,
 			"Dialect": func() string {
 				return dialect.DriverName()
 			},

@@ -69,6 +69,9 @@ expect a set of rows as the result. Use this action to override this.
 * `{{Sort .Test|.Global true|false}}`: specify whether or not the set of rows from the next
 statement (`.Test`) or all following statements (`.Global`) are sorted. The default is that they
 are not sorted.
+* `{{Types .Test|.Global true|false}}`: specify whether or not the columns from the next
+statement (`.Test`) or all following statements (`.Global`) should include types. The default is
+not to.
 * `{{BINARY [<length>]}}`: the column type appropriate to the implementation.
 * `{{VARBINARY [<length>]}}`: the column type appropriate to the implementation.
 * `{{BLOB [<length>]}}`: the column type appropriate to the implementation.
