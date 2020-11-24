@@ -17,12 +17,18 @@ import (
 
 var Skipped = fmt.Errorf("skipped")
 
+type QueryResult struct {
+	Columns   []string
+	TypeNames []string
+	Rows      [][]string
+}
+
 type Runner interface {
 	// RunExec is used to execute a single SQL statement which must not return rows.
 	RunExec(tst *Test) (int64, error)
 	// RunQuery is used to execute a single SQL statement which returns a slice of column
 	// names and a slice of rows.
-	RunQuery(tst *Test) ([]string, [][]string, error)
+	RunQuery(tst *Test) (QueryResult, error)
 }
 
 type Reporter interface {
@@ -217,27 +223,27 @@ func (rr resultRows) Less(i, j int) bool {
 }
 
 func testQuery(tst *Test, run Runner, out io.Writer, tctx *TestContext, psql bool) error {
-	cols, rows, err := run.RunQuery(tst)
+	qr, err := run.RunQuery(tst)
 	if err != nil {
 		return err
 	}
 	if !tctx.NoSort {
-		sort.Sort(resultRows(rows))
+		sort.Sort(resultRows(qr.Rows))
 	}
 
 	if psql {
 		// Unaligned output like psql -A
-		psqlOutput(out, cols, rows)
+		psqlOutput(out, qr.Columns, qr.Rows)
 	} else {
-		tabwriterOutput(out, cols, rows)
+		tabwriterOutput(out, qr.Columns, qr.Rows)
 	}
-	switch len(rows) {
+	switch len(qr.Rows) {
 	case 0:
 		fmt.Fprint(out, "(no rows)\n")
 	case 1:
 		fmt.Fprint(out, "(1 row)\n")
 	default:
-		fmt.Fprintf(out, "(%d rows)\n", len(rows))
+		fmt.Fprintf(out, "(%d rows)\n", len(qr.Rows))
 	}
 	return nil
 }

@@ -12,9 +12,11 @@ func (run testRunner) RunExec(tst *sqltestdb.Test) (int64, error) {
 	return -1, nil
 }
 
-func (run testRunner) RunQuery(tst *sqltestdb.Test) ([]string, [][]string, error) {
-	return []string{"col1", "col2", "col3"},
-		[][]string{{"1", "2", "3"}, {"4", "5", "6"}}, nil
+func (run testRunner) RunQuery(tst *sqltestdb.Test) (sqltestdb.QueryResult, error) {
+	return sqltestdb.QueryResult{
+		Columns: []string{"col1", "col2", "col3"},
+		Rows:    [][]string{{"1", "2", "3"}, {"4", "5", "6"}},
+	}, nil
 }
 
 type report struct {

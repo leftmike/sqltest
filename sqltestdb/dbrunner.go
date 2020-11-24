@@ -23,16 +23,16 @@ func (run *DBRunner) RunExec(tst *Test) (int64, error) {
 	return -1, err
 }
 
-func (run *DBRunner) RunQuery(tst *Test) ([]string, [][]string, error) {
+func (run *DBRunner) RunQuery(tst *Test) (QueryResult, error) {
 	rows, err := run.db.Query(tst.Test)
 	if err != nil {
-		return nil, nil, err
+		return QueryResult{}, err
 	}
 	defer rows.Close()
 
 	cols, err := rows.Columns()
 	if err != nil {
-		return nil, nil, err
+		return QueryResult{}, err
 	}
 
 	lenCols := len(cols)
@@ -41,11 +41,21 @@ func (run *DBRunner) RunQuery(tst *Test) ([]string, [][]string, error) {
 		dest[i] = new(sql.RawBytes)
 	}
 
+	colTypes, err := rows.ColumnTypes()
+	if err != nil {
+		return QueryResult{}, err
+	}
+
+	var types []string
+	for _, ct := range colTypes {
+		types = append(types, ct.DatabaseTypeName())
+	}
+
 	var results [][]string
 	for rows.Next() {
 		err = rows.Scan(dest...)
 		if err != nil {
-			return nil, nil, err
+			return QueryResult{}, err
 		}
 		var resultRow []string
 		for _, v := range dest {
@@ -58,7 +68,11 @@ func (run *DBRunner) RunQuery(tst *Test) ([]string, [][]string, error) {
 		results = append(results, resultRow)
 	}
 
-	return cols, results, nil
+	return QueryResult{
+		Columns:   cols,
+		TypeNames: types,
+		Rows:      results,
+	}, nil
 }
 
 func (dbr *DBRunner) Connect(driver, source string) error {
