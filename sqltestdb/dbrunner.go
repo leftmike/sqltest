@@ -83,3 +83,12 @@ func (dbr *DBRunner) Connect(driver, source string) error {
 	dbr.db = db
 	return nil
 }
+
+func (dbr *DBRunner) Close() error {
+	var err error
+	if dbr.db != nil {
+		err = dbr.db.Close()
+		dbr.db = nil
+	}
+	return err
+}

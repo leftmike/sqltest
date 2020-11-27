@@ -58,8 +58,10 @@ var (
 	psql     = flag.Bool("psql", false, "output in psql format")
 
 	sqlite3Source  = flag.String("sqlite3", ":memory:", "data source to use for sqlite3")
-	postgresSource = flag.String("postgres", "", "data source to use for postgres")
-	mysqlSource    = flag.String("mysql", "", "data source to use for mysql")
+	postgresSource = flag.String("postgres",
+		"host=localhost port=5432 dbname=test sslmode=disable",
+		"data source to use for postgres (host=localhost port=5432 dbname=test sslmode=disable)")
+	mysqlSource = flag.String("mysql", "", "data source to use for mysql")
 )
 
 type driver struct {
