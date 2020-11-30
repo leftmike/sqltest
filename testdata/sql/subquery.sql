@@ -1,6 +1,7 @@
 --
 -- Test subqueries
 --
+-- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
 
 DROP TABLE IF EXISTS tbl1;
 
