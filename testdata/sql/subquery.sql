@@ -53,3 +53,10 @@ SELECT *
     FROM (SELECT c3, c2 + c1 FROM (VALUES (1, 2, 3), (4, 5, 6), (7, 8, 9)) AS t1 (c1, c2, c3))
     AS t2 (col1, col2);
 
+SELECT c1, c2, EXISTS(SELECT 1 FROM tbl2 WHERE c1 = tbl1.c2) AS e3 FROM tbl1;
+
+SELECT c1, c2, EXISTS(SELECT 1 FROM tbl2 WHERE c1 = 10) AS e3 FROM tbl1;
+
+SELECT c1, c2, EXISTS(SELECT 1 FROM tbl2 WHERE c1 = 60) AS e3 FROM tbl1;
+
+SELECT c1, c2, EXISTS(SELECT 1 FROM tbl2 WHERE tbl1.c2 > 50) AS e3 FROM tbl1;
