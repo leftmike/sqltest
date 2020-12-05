@@ -60,3 +60,44 @@ SELECT c1, c2, EXISTS(SELECT 1 FROM tbl2 WHERE c1 = 10) AS e3 FROM tbl1;
 SELECT c1, c2, EXISTS(SELECT 1 FROM tbl2 WHERE c1 = 60) AS e3 FROM tbl1;
 
 SELECT c1, c2, EXISTS(SELECT 1 FROM tbl2 WHERE tbl1.c2 > 50) AS e3 FROM tbl1;
+
+SELECT c1, c2 FROM tbl1 WHERE c2 IN (SELECT c1 FROM tbl2);
+
+SELECT c1, c2 FROM tbl1 WHERE c2 NOT IN (SELECT c1 FROM tbl2);
+
+SELECT c1, c2 IN (SELECT c1 FROM tbl2) AS e1 FROM tbl1;
+
+SELECT c1, c2 NOT IN (SELECT c1 FROM tbl2) AS e1 FROM tbl1;
+
+DROP TABLE IF EXISTS tbl3;
+
+CREATE TABLE tbl3 (c1 int PRIMARY KEY, c2 TEXT, c3 int);
+
+INSERT INTO tbl3 VALUES
+    (10, 'ten', 11),
+    (20, NULL, 22),
+    (30, 'thirty', 33),
+    (40, NULL, NULL),
+    (50, 'fifty', 55);
+
+SELECT * FROM tbl3;
+
+SELECT c1, c3 FROM tbl1 WHERE c3 IN (SELECT c3 FROM tbl3);
+
+SELECT c1, c3 FROM tbl1 WHERE c3 NOT IN (SELECT c3 FROM tbl3);
+
+SELECT c1, c3 IN (SELECT c3 FROM tbl3) AS e1 FROM tbl1;
+
+SELECT c1, c3 NOT IN (SELECT c3 FROM tbl3) AS e1 FROM tbl1;
+
+-- ANY
+
+SELECT c1, c2 FROM tbl1 WHERE c2 >= ANY (SELECT c1 + 20 FROM tbl2);
+
+SELECT c1, c2 < ANY (SELECT c1 - 10 FROM tbl2) AS e1 FROM tbl1;
+
+-- ALL
+
+SELECT c1, c2 FROM tbl1 WHERE c2 >= ALL (SELECT c1 + 20 FROM tbl2);
+
+SELECT c1, c2 < ALL (SELECT c1 + 40 FROM tbl2) AS e1 FROM tbl1;
