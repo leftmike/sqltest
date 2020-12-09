@@ -36,13 +36,14 @@ func main() {
 			log.Printf("invalid driver: %s\n", arg)
 			continue
 		}
-		if *d.Source == "" && *useAWS {
+		if d.Driver == "postgres" && *useAWS {
 			s, err := EnsurePostgresRDS("sqltest-postgresql")
 			if err != nil {
 				log.Printf("error: %s: %s\n", d.Driver, err)
 				continue
 			}
 			*d.Source = s
+			log.Println(s)
 		}
 		err := d.RunTests(report{d.Driver})
 		if err != nil {
