@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	useAWS = flag.Bool("aws", false, "use an AWS RDS database")
+	useRDS    = flag.Bool("rds", false, "use an AWS RDS database")
+	useAurora = flag.Bool("aurora", false, "use an AWS Aurora database")
 )
 
 type report struct {
@@ -36,8 +37,8 @@ func main() {
 			log.Printf("invalid driver: %s\n", arg)
 			continue
 		}
-		if d.Driver == "postgres" && *useAWS {
-			s, err := EnsurePostgresRDS("sqltest-postgresql")
+		if d.Driver == "postgres" && (*useRDS || *useAurora) {
+			s, err := EnsurePostgresAWS("sqltest-postgresql", *useAurora)
 			if err != nil {
 				log.Printf("error: %s: %s\n", d.Driver, err)
 				continue
