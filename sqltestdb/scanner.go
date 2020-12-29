@@ -14,7 +14,6 @@ type Scanner struct {
 	scanner    *bufio.Scanner
 	line       string
 	done       bool
-	tst        Test
 }
 
 type Test struct {
@@ -58,8 +57,7 @@ var (
 )
 
 func (s *Scanner) Scan() (*Test, error) {
-	s.tst = Test{}
-	tst := &s.tst
+	var tst Test
 
 	if s.done {
 		return nil, s.err()
@@ -115,5 +113,5 @@ func (s *Scanner) Scan() (*Test, error) {
 		tst.Statement = strings.ToUpper(twoStmtRegexp.FindString(tst.Test))
 	}
 
-	return tst, nil
+	return &tst, nil
 }
