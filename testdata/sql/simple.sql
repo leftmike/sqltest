@@ -11,4 +11,8 @@ INSERT INTO tbl VALUES
     (7, 8, 9),
     (4, 5, 6);
 
+/*
+SELECT d1, d2, d3 FROM table;
+*/
+
 SELECT c1, c2, c3 FROM tbl;

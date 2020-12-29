@@ -70,8 +70,20 @@ func (s *Scanner) Scan() (*Test, error) {
 	// Skip blank lines.
 
 	for {
-		if strings.TrimSpace(s.line) != "" {
+		line := strings.TrimSpace(s.line)
+		if line != "" {
 			break
+		}
+		if strings.Contains(line, "/*") {
+			for {
+				if strings.Contains(line, "*/") {
+					break
+				}
+				if !s.scanLine() {
+					return nil, s.err()
+				}
+				line = strings.TrimSpace(s.line)
+			}
 		}
 		if !s.scanLine() {
 			return nil, s.err()
