@@ -71,9 +71,6 @@ func (s *Scanner) Scan() (*Test, error) {
 
 	for {
 		line := strings.TrimSpace(s.line)
-		if line != "" {
-			break
-		}
 		if strings.Contains(line, "/*") {
 			for {
 				if strings.Contains(line, "*/") {
@@ -84,6 +81,8 @@ func (s *Scanner) Scan() (*Test, error) {
 				}
 				line = strings.TrimSpace(s.line)
 			}
+		} else if line != "" {
+			break
 		}
 		if !s.scanLine() {
 			return nil, s.err()
