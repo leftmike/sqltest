@@ -56,6 +56,16 @@ var (
 	twoStmtRegexp = regexp.MustCompile(`(?m)^[a-zA-Z]+ +[a-zA-Z]+`)
 )
 
+func emptyLine(s string) bool {
+	for _, r := range s {
+		if r != ' ' && r != '\t' && r != '\n' && r != '\r' {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (s *Scanner) Scan() (*Test, error) {
 	var tst Test
 
@@ -70,18 +80,16 @@ func (s *Scanner) Scan() (*Test, error) {
 	// Skip blank lines.
 
 	for {
-		line := strings.TrimSpace(s.line)
-		if strings.Contains(line, "/*") {
+		if strings.Contains(s.line, "/*") {
 			for {
-				if strings.Contains(line, "*/") {
+				if strings.Contains(s.line, "*/") {
 					break
 				}
 				if !s.scanLine() {
 					return nil, s.err()
 				}
-				line = strings.TrimSpace(s.line)
 			}
-		} else if line != "" {
+		} else if !emptyLine(s.line) {
 			break
 		}
 		if !s.scanLine() {
@@ -94,19 +102,20 @@ func (s *Scanner) Scan() (*Test, error) {
 	tst.Filename = s.Filename
 	tst.LineNumber = s.lineNumber
 
+	var sb strings.Builder
 	for {
-		if strings.TrimSpace(s.line) == "" {
+		if emptyLine(s.line) {
 			break
 		}
-		if tst.Test == "" {
-			tst.Test = s.line
-		} else {
-			tst.Test += "\n" + s.line
+		if sb.Len() > 0 {
+			sb.WriteByte('\n')
 		}
+		sb.WriteString(s.line)
 		if !s.scanLine() {
 			break
 		}
 	}
+	tst.Test = sb.String()
 
 	tst.Statement = strings.ToUpper(stmtRegexp.FindString(tst.Test))
 	if tst.Statement == "ALTER" || tst.Statement == "CREATE" || tst.Statement == "DROP" {
