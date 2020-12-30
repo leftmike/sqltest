@@ -24,7 +24,7 @@ type Test struct {
 }
 
 func NewScanner(r io.Reader) *Scanner {
-	return &Scanner{scanner: bufio.NewScanner(r)}
+	return &Scanner{scanner: bufio.NewScanner(bufio.NewReader(r))}
 }
 
 func (s *Scanner) scanLine() bool {
