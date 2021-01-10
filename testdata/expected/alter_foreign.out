@@ -1,0 +1,106 @@
+--
+-- Test ALTER TABLE with FOREIGN KEY
+--
+-- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
+DROP TABLE IF EXISTS tbl1 CASCADE;
+DROP TABLE IF EXISTS tbl2;
+CREATE TABLE tbl1 (
+    c1 int,
+    c2 int PRIMARY KEY,
+    c3 int,
+    c4 text
+);
+CREATE TABLE tbl2 (
+    c5 int PRIMARY KEY,
+    c6 int,
+    c7 text,
+    c8 int,
+    UNIQUE (c6),
+    UNIQUE (c8, c7)
+);
+{{Fail .Test}}
+ALTER TABLE tbl3 ADD FOREIGN KEY (c1) REFERENCES tbl1;
+{{Fail .Test}}
+ALTER TABLE tbl1 ADD FOREIGN KEY (c1) REFERENCES tbl3;
+{{Fail .Test}}
+ALTER TABLE tbl1 ADD FOREIGN KEY (col1) REFERENCES tbl2;
+{{Fail .Test}}
+ALTER TABLE tbl1 ADD FOREIGN KEY (c4) REFERENCES tbl2;
+{{Fail .Test}}
+ALTER TABLE tbl1 ADD FOREIGN KEY (c1) REFERENCES tbl2 (c7);
+INSERT INTO tbl1 VALUES
+    (10, 1, 100, 'one hundred'),
+    (20, 2, 200, 'two hundred'),
+    (30, 3, 333, 'three hundred thirty three');
+SELECT * FROM tbl1;
+   c1 c2  c3                         c4
+   -- --  --                         --
+ 1 10  1 100                one hundred
+ 2 20  2 200                two hundred
+ 3 30  3 333 three hundred thirty three
+(3 rows)
+DELETE FROM tbl1 WHERE c3 = 333;
+INSERT INTO tbl2 VALUES
+    (11, 1, 'one hundred', 100),
+    (22, 2, 'two hundred', 200),
+    (33, 3, 'three hundred', 300),
+    (44, 4, 'four hundred', 400),
+    (55, 5, 'five hundred', 500);
+SELECT * FROM tbl2;
+   c5 c6            c7  c8
+   -- --            --  --
+ 1 11  1   one hundred 100
+ 2 22  2   two hundred 200
+ 3 33  3 three hundred 300
+ 4 44  4  four hundred 400
+ 5 55  5  five hundred 500
+(5 rows)
+ALTER TABLE tbl1 ADD FOREIGN KEY (c4, c3) REFERENCES tbl2 (c7, c8);
+{{Fail .Test}}
+INSERT INTO tbl1 VALUES
+    (30, 3, 333, 'three hundred thirty three');
+INSERT INTO tbl1 VALUES
+    (30, 3, 300, 'three hundred'),
+    (40, 4, 400, 'four hundred'),
+    (50, 5, 500, 'five hundred');
+ALTER TABLE tbl2 ADD FOREIGN KEY (c6) REFERENCES tbl1;
+ALTER TABLE tbl1 ADD FOREIGN KEY (c2) REFERENCES tbl2 (c6);
+{{Fail .Test}}
+INSERT INTO tbl1 VALUES
+    (60, 6, 600, 'six hundred');
+{{Fail .Test}}
+INSERT INTO tbl2 VALUES
+    (66, 6, 'six hundred', 600);
+SELECT * FROM tbl1;
+   c1 c2  c3            c4
+   -- --  --            --
+ 1 10  1 100   one hundred
+ 2 20  2 200   two hundred
+ 3 30  3 300 three hundred
+ 4 40  4 400  four hundred
+ 5 50  5 500  five hundred
+(5 rows)
+SELECT * FROM tbl2;
+   c5 c6            c7  c8
+   -- --            --  --
+ 1 11  1   one hundred 100
+ 2 22  2   two hundred 200
+ 3 33  3 three hundred 300
+ 4 44  4  four hundred 400
+ 5 55  5  five hundred 500
+(5 rows)
+DROP TABLE IF EXISTS tbl1 CASCADE;
+INSERT INTO tbl2 VALUES
+    (66, 6, 'six hundred', 600);
+UPDATE tbl2 SET c8 = c8 * 10;
+SELECT * FROM tbl2;
+   c5 c6            c7   c8
+   -- --            --   --
+ 1 11  1   one hundred 1000
+ 2 22  2   two hundred 2000
+ 3 33  3 three hundred 3000
+ 4 44  4  four hundred 4000
+ 5 55  5  five hundred 5000
+ 6 66  6   six hundred 6000
+(6 rows)
+DROP TABLE IF EXISTS tbl2 CASCADE;
