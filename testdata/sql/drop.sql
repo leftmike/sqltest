@@ -1,5 +1,5 @@
 --
--- Test FOREIGN KEY constraints
+-- Test DROP TABLE with FOREIGN KEY constraints
 --
 -- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
 
@@ -20,16 +20,18 @@ CREATE TABLE tbl2 (
 );
 
 INSERT INTO tbl1 VALUES
-    (10, 1, 100),
-    (20, 2, 200),
-    (30, 3, 300),
-    (40, 4, 400),
-    (50, 5, 500);
+    (100, 1, 10),
+    (200, 2, 20),
+    (300, 3, 30),
+    (400, 4, 10),
+    (500, 5, 20);
 
 INSERT INTO tbl2 VALUES
     (10, 100, 1),
     (20, 200, 2),
     (30, 300, 3);
+
+ALTER TABLE tbl1 ADD FOREIGN KEY (c3) REFERENCES tbl2 ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 {{Fail .Test}}
 INSERT INTO tbl2 VALUES
@@ -46,7 +48,7 @@ SELECT * FROM tbl1;
 SELECT * FROM tbl2;
 
 INSERT INTO tbl1 VALUES
-    (60, 6, 600);
+    (600, 6, 30);
 
 INSERT INTO tbl2 VALUES
     (40, 400, 4),
@@ -67,9 +69,9 @@ DELETE FROM tbl1 WHERE c2 = 6;
 UPDATE tbl1 SET c2 = 44 WHERE c2 = 4;
 
 INSERT INTO tbl1 VALUES
-    (70, 7, 700),
-    (80, 8, 800),
-    (90, 9, 900);
+    (700, 7, 10),
+    (800, 8, 20),
+    (900, 9, 30);
 
 SELECT * FROM tbl1;
 
@@ -84,6 +86,24 @@ SELECT * FROM tbl1;
 {{Fail .Test}}
 DROP TABLE tbl1;
 
-DROP TABLE tbl1 CASCADE;
-
+{{Fail .Test}}
 DROP TABLE tbl2;
+
+DROP TABLE tbl2 CASCADE;
+
+DELETE FROM tbl1 WHERE c2 = 6;
+
+UPDATE tbl1 SET c2 = 44 WHERE c2 = 4;
+
+DELETE FROM tbl1 WHERE c2 > 3;
+
+UPDATE tbl1 SET c2 = c2 * 10 WHERE c2 > 5;
+
+INSERT INTO tbl1 VALUES
+    (4, 44, 444),
+    (555, 55, 5),
+    (66, 666, 6);
+
+SELECT * FROM tbl1;
+
+DROP TABLE tbl1 CASCADE;
