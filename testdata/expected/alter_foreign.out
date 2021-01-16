@@ -4,6 +4,7 @@
 -- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
 DROP TABLE IF EXISTS tbl1 CASCADE;
 DROP TABLE IF EXISTS tbl2;
+DROP TABLE IF EXISTS tbl3 CASCADE;
 CREATE TABLE tbl1 (
     c1 int,
     c2 int PRIMARY KEY,
@@ -18,10 +19,16 @@ CREATE TABLE tbl2 (
     UNIQUE (c6),
     UNIQUE (c8, c7)
 );
+CREATE TABLE tbl3 (
+    c1 int,
+    c2 int PRIMARY KEY,
+    c3 int,
+    c4 text
+);
 {{Fail .Test}}
-ALTER TABLE tbl3 ADD FOREIGN KEY (c1) REFERENCES tbl1;
+ALTER TABLE tbl4 ADD FOREIGN KEY (c1) REFERENCES tbl1;
 {{Fail .Test}}
-ALTER TABLE tbl1 ADD FOREIGN KEY (c1) REFERENCES tbl3;
+ALTER TABLE tbl1 ADD FOREIGN KEY (c1) REFERENCES tbl4;
 {{Fail .Test}}
 ALTER TABLE tbl1 ADD FOREIGN KEY (col1) REFERENCES tbl2;
 {{Fail .Test}}
@@ -74,6 +81,9 @@ INSERT INTO tbl1 VALUES
     (50, 5, 500, 'five hundred');
 ALTER TABLE tbl2 ADD FOREIGN KEY (c6) REFERENCES tbl1;
 ALTER TABLE tbl1 ADD FOREIGN KEY (c2) REFERENCES tbl2 (c6);
+ALTER TABLE tbl3
+    ADD FOREIGN KEY (c4, c3) REFERENCES tbl2 (c7, c8),
+    ADD FOREIGN KEY (c2) REFERENCES tbl2 (c6);
 {{Fail .Test}}
 INSERT INTO tbl1 VALUES
     (60, 6, 600, 'six hundred');
@@ -113,3 +123,4 @@ SELECT * FROM tbl2;
  6 66  6   six hundred 6000
 (6 rows)
 DROP TABLE IF EXISTS tbl2 CASCADE;
+DROP TABLE IF EXISTS tbl3 CASCADE;
