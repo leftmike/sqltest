@@ -1,6 +1,7 @@
 --
 -- Test ALTER TABLE ... DROP
 --
+-- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
 DROP TABLE IF EXISTS tbl1;
 CREATE TABLE tbl1 (
     c1 int primary key,

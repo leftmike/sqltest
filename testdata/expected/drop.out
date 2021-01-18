@@ -2,6 +2,7 @@
 -- Test DROP TABLE with FOREIGN KEY constraints
 --
 -- {{if eq Dialect "sqlite3"}}{{Skip}}{{end}}
+-- {{if eq Dialect "maho-kvrows"}}{{Skip}}{{end}}
 DROP TABLE IF EXISTS tbl1 CASCADE;
 DROP TABLE IF EXISTS tbl2;
 CREATE TABLE tbl1 (

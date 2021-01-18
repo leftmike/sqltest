@@ -9,6 +9,10 @@ DROP TABLE IF EXISTS tbl2;
 
 DROP TABLE IF EXISTS tbl3 CASCADE;
 
+DROP TABLE IF EXISTS tbl4 CASCADE;
+
+DROP TABLE IF EXISTS tbl5 CASCADE;
+
 CREATE TABLE tbl1 (
     c1 int,
     c2 int PRIMARY KEY,
@@ -115,3 +119,65 @@ SELECT * FROM tbl2;
 DROP TABLE IF EXISTS tbl2 CASCADE;
 
 DROP TABLE IF EXISTS tbl3 CASCADE;
+
+CREATE TABLE tbl5 (
+    c5 int PRIMARY KEY,
+    c6 int,
+    c7 text,
+    c8 int,
+    UNIQUE (c6),
+    UNIQUE (c8, c7)
+);
+
+CREATE TABLE tbl4 (
+    c1 int,
+    c2 int PRIMARY KEY,
+    c3 int,
+    c4 text,
+    CONSTRAINT con1 FOREIGN KEY (c4, c3) REFERENCES tbl5 (c7, c8)
+);
+
+INSERT INTO tbl5 VALUES
+    (11, 1, 'one hundred', 100),
+    (22, 2, 'two hundred', 200),
+    (33, 3, 'three hundred', 300),
+    (44, 4, 'four hundred', 400),
+    (55, 5, 'five hundred', 500);
+
+INSERT INTO tbl4 VALUES
+    (10, 1, 100, 'one hundred'),
+    (20, 2, 200, 'two hundred');
+
+SELECT * FROM tbl4;
+
+SELECT * FROM tbl5;
+
+{{Fail .Test}}
+INSERT INTO tbl4 VALUES
+    (30, 3, 333, 'three hundred thirty three');
+
+INSERT INTO tbl4 VALUES
+    (30, 3, 300, 'three hundred'),
+    (40, 4, 400, 'four hundred'),
+    (50, 5, 500, 'five hundred');
+
+{{Fail .Test}}
+INSERT INTO tbl4 VALUES
+    (60, 6, 666, 'six hundred sixty six');
+
+SELECT * FROM tbl4;
+
+SELECT * FROM tbl5;
+
+ALTER TABLE tbl4 DROP CONSTRAINT con1;
+
+INSERT INTO tbl4 VALUES
+    (60, 6, 666, 'six hundred sixty six');
+
+SELECT * FROM tbl4;
+
+SELECT * FROM tbl5;
+
+DROP TABLE tbl4 CASCADE;
+
+DROP TABLE tbl5 CASCADE;
