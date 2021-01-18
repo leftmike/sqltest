@@ -1,7 +1,6 @@
 --
 -- Test ALTER TABLE ... DROP
 --
--- {{if eq Dialect "maho-kvrows"}}{{Skip}}{{end}}
 
 DROP TABLE IF EXISTS tbl1;
 
